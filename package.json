@@ -1,9 +1,9 @@
 {
-  "name": "@discue/paddle-integration-firestore",
+  "name": "@discue/paddle-integration-mongodb",
   "author": "Stefan Pfaffel",
   "license": "MIT",
-  "version": "0.23.1",
-  "description": "Paddle payments integration for Google Cloud Firestore",
+  "version": "0.1.0",
+  "description": "Paddle payments integration mongodb database",
   "main": "lib/index",
   "files": [
     "lib"
@@ -24,16 +24,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/discue/paddle-integration-firestore.git"
+    "url": "git+https://github.com/discue/paddle-integration-mongodb.git"
   },
   "bugs": {
-    "url": "https://github.com/discue/paddle-integration-firestore/issues"
+    "url": "https://github.com/discue/paddle-integration-mongodb/issues"
   },
-  "homepage": "https://github.com/discue/paddle-integration-firestore#readme",
+  "homepage": "https://github.com/discue/paddle-integration-mongodb#readme",
   "keywords": [
     "paddle",
     "payments",
-    "firestore"
+    "mongodb"
   ],
   "devDependencies": {
     "@playwright/test": "^1.31.1",
