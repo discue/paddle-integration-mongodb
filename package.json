@@ -51,6 +51,7 @@
   "dependencies": {
     "firebase-admin": "^11.5.0",
     "got": "^12.5.3",
-    "html-entities": "^2.3.3"
+    "html-entities": "^2.3.3",
+    "mongodb": "^5.5.0"
   }
 }
