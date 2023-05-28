@@ -44,7 +44,7 @@
     "mocha": "^10.2.0",
     "mongodb-memory-server": "^8.12.2",
     "node-amy": "^3.7.0",
-    "nodemon": "^2.0.20",
+    "nodemon": "^2.0.22",
     "puppeteer": "^20.4.0",
     "standard-version": "^9.5.0"
   },
