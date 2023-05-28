@@ -14,7 +14,6 @@
     "./server": "./lib/index.js"
   },
   "scripts": {
-    "emulators": "firebase emulators:start",
     "test": "mocha test/spec/**/*.spec.js --check-leaks  --timeout 50000 --file test/global-mocha-setup.js",
     "test-e2e": "playwright test test-e2e/spec",
     "lint": "eslint -c .eslintrc.json lib",
