@@ -12,8 +12,8 @@ const app = express()
 const port = process.env.PORT || 3456
 
 const paddleIntegrationFirestore = require('@discue/paddle-firebase-integration')
-// pass the path to the collection here
-const subscriptions = new paddleIntegrationFirestore.SubscriptionHooks('api_clients')
+const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const subscriptions = new paddleIntegration.SubscriptionHooks({ storage })
 
 // register body parser first and middleware second
 app.use('/_/payments', paddleIntegrationFirestore.bodyparser())

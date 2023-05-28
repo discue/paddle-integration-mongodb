@@ -18,10 +18,13 @@ Uses the `subscription_id` to contact Paddle API and checks whether the given lo
 'use strict'
 
 const paddleIntegration = require('@discue/paddle-firebase-integration')
-// initialize api and subscription hooks first
+
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
-const hookStorage = new paddleIntegration.SubscriptionHooks('api_clients')
-const subscriptions = new paddleIntegration.SubscriptionHydration('api_clients', { api, hookStorage })
+const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const hookStorage = new paddleIntegration.SubscriptionHooks({ storage })
+const subscriptionInfo = new paddleIntegration.SubscriptionInfo({ api, storage })
+
+const subscriptions = new paddleIntegration.SubscriptionHydration('api_clients', { api, hookStorage, subscriptionInfo })
 
 router.post('/subscriptions/initialize', async (req, res) => {
     const { _dsq: { clientId } = {}, body } = req
@@ -29,7 +32,7 @@ router.post('/subscriptions/initialize', async (req, res) => {
 
     await errorHandler(res, async () => {
         try {
-            await subscriptionInfo.hydrateSubscriptionCreated([clientId], { subscription_id }, checkout_id)
+            await subscriptions.hydrateSubscriptionCreated([clientId], { subscription_id }, checkout_id)
             sendOkNoContent({ res })
         } catch (e) {
             console.error(`Hydration failed with ${e} at ${e.stack}}`)
@@ -95,10 +98,13 @@ Uses the `subscription_id` to contact Paddle API and checks whether the given lo
 'use strict'
 
 const paddleIntegration = require('@discue/paddle-firebase-integration')
-// initialize api and subscription hooks first
+
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
-const hookStorage = new paddleIntegration.SubscriptionHooks('api_clients')
-const subscriptions = new paddleIntegration.SubscriptionHydration('api_clients', { api, hookStorage })
+const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const hookStorage = new paddleIntegration.SubscriptionHooks({ storage })
+const subscriptionInfo = new paddleIntegration.SubscriptionInfo({ api, storage })
+
+const subscriptions = new paddleIntegration.SubscriptionHydration('api_clients', { api, hookStorage, subscriptionInfo })
 
 router.post('/subscriptions/cancel', async (req, res) => {
     const { _dsq: { clientId } = {}, body } = req
@@ -109,7 +115,7 @@ router.post('/subscriptions/cancel', async (req, res) => {
             // cancel subscription
             // ..
             // then hydrate cancellation
-            await subscriptionInfo.hydrateSubscriptionCancelled([clientId], { subscription_id })
+            await subscriptions.hydrateSubscriptionCancelled([clientId], { subscription_id })
             sendOkNoContent({ res })
         } catch (e) {
             console.error(`Hydration failed with ${e} at ${e.stack}}`)
