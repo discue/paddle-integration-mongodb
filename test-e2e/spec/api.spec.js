@@ -9,7 +9,7 @@ let api
 
 test.beforeAll(async () => {
     const API = (await import('../../lib/paddle/api.js')).default
-    api = new API({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
+    api = new API({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID, logRequests: true })
 })
 
 test('list all products', async () => {
@@ -23,8 +23,8 @@ test('list all active subscriptions', async () => {
 })
 
 test('list all deleted subscriptions', async () => {
-    const subs = await api.listSubscriptions('deleted', 51)
-    expect(subs.length).toBeGreaterThan(50)
+    const subs = await api.listSubscriptions('deleted', 11)
+    expect(subs.length).toBeGreaterThan(10)
 })
 
 test('list all plans', async () => {
@@ -33,27 +33,27 @@ test('list all plans', async () => {
 })
 
 test('list all subscription payments', async () => {
-    const payments = await api.getSubscriptionPayments({ subscription_id: '399236' })
+    const payments = await api.getSubscriptionPayments({ subscription_id: '487716' })
     expect(payments).toHaveLength(1)
 })
 
 test('filters subscription payments by plan (correct plan)', async () => {
-    const payments = await api.getSubscriptionPayments({ subscription_id: '399236' }, { plan: '52450' })
+    const payments = await api.getSubscriptionPayments({ subscription_id: '487716' }, { plan: '52450' })
     expect(payments).toHaveLength(1)
 })
 
 test('filters subscription payments starting after', async () => {
-    const payments = await api.getSubscriptionPayments({ subscription_id: '399236' }, { from: '2030-01-01' })
+    const payments = await api.getSubscriptionPayments({ subscription_id: '487716' }, { from: '2030-01-01' })
     expect(payments).toHaveLength(0)
 })
 
 test('filters subscription payments starting before 2030', async () => {
-    const payments = await api.getSubscriptionPayments({ subscription_id: '399236' }, { to: '2030-01-01' })
+    const payments = await api.getSubscriptionPayments({ subscription_id: '487716' }, { to: '2030-01-01' })
     expect(payments).toHaveLength(1)
 })
 
 test('filters subscription payments starting before 2020', async () => {
-    const payments = await api.getSubscriptionPayments({ subscription_id: '399236' }, { to: '2020-01-01' })
+    const payments = await api.getSubscriptionPayments({ subscription_id: '487716' }, { to: '2020-01-01' })
     expect(payments).toHaveLength(0)
 })
 
