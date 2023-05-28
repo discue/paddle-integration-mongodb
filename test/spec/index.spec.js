@@ -9,10 +9,10 @@ const paymentSucceded = require('../fixtures/payment-succeeded')
 const paymentFailed = require('../fixtures/payment-failed')
 const paymentRefunded = require('../fixtures/payment-refunded')
 
-const { SubscriptionHooks, htmlEncoder, SubscriptionInfo } = require('../../lib/index')
-const paddleIntegration = new SubscriptionHooks('api_client')
-const subscriptionInfo = new SubscriptionInfo('api_client', { hookStorage: paddleIntegration })
-const storage = require('../../lib/firestore/nested-firestore-resource')({ documentPath: 'api_client', resourceName: 'api_clients' })
+const { SubscriptionHooks, htmlEncoder, SubscriptionInfo, subscriptionStorage } = require('../../lib/index')
+const storage = subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const paddleIntegration = new SubscriptionHooks({ storage })
+const subscriptionInfo = new SubscriptionInfo({ hookStorage: paddleIntegration })
 
 const { expect } = require('chai')
 const { customData } = require('../../lib/client')
@@ -23,7 +23,6 @@ describe('PaddleIntegration', () => {
 
     beforeEach(async () => {
         ids = [uuid()]
-        await storage.put(ids, {})
         await paddleIntegration.addSubscriptionPlaceholder(ids)
     })
 
@@ -32,7 +31,7 @@ describe('PaddleIntegration', () => {
             const createPayload = Object.assign({}, subscriptionCreated, { passthrough: JSON.stringify(customData(ids)) })
 
             await paddleIntegration.addSubscriptionCreatedStatus(createPayload)
-            const { subscription: sub } = await storage.get(ids)
+            const sub = await storage.get(ids)
             const status = await subscriptionInfo.getAllSubscriptionsStatus(sub)
             expect(status[createPayload.subscription_plan_id]).to.be.true
         })
@@ -44,11 +43,11 @@ describe('PaddleIntegration', () => {
             )
             await paddleIntegration.addSubscriptionCreatedStatus(createPayload)
 
-            const { subscription: sub } = await storage.get(ids)
+            const sub = await storage.get(ids)
             expect(sub.payments).to.have.length(0)
-            expect(sub.status).to.have.length(2)
+            expect(sub.status).to.have.length(1)
 
-            const status = sub.status[1]
+            const status = sub.status[0]
             expect(status.alert_id).to.equal(createPayload.alert_id)
             expect(status.alert_name).to.equal(createPayload.alert_name)
             expect(status.currency).to.equal(createPayload.currency)
@@ -93,17 +92,14 @@ describe('PaddleIntegration', () => {
             )
             await paddleIntegration.addSubscriptionUpdatedStatus(updatePayload)
 
-            const { subscription: sub } = await storage.get(ids)
+            const sub = await storage.get(ids)
             expect(sub.payments).to.have.length(0)
             // 1. placeholder
             // 2. subscription created
             // 3. perpetual status subscription 
-            expect(sub.status).to.have.length(4)
+            expect(sub.status).to.have.length(3)
 
-            const status0 = sub.status[0]
-            expect(status0.description).to.equal('pi/pre-checkout-placeholder')
-
-            const status1 = sub.status[1]
+            const status1 = sub.status[0]
             expect(status1.alert_id).to.equal(createPayload.alert_id)
             expect(status1.alert_name).to.equal(createPayload.alert_name)
             expect(status1.currency).to.equal(createPayload.currency)
@@ -119,7 +115,7 @@ describe('PaddleIntegration', () => {
             expect(status1.subscription_plan_id).to.equal(createPayload.subscription_plan_id)
             expect(status1.vendor_user_id).to.equal(createPayload.user_id)
 
-            const status2 = sub.status[2]
+            const status2 = sub.status[1]
             expect(status2.currency).to.not.equal(createPayload.currency)
             // these values must be equal to update payload values
             expect(status2.alert_id).to.equal(updatePayload.alert_id)
@@ -133,7 +129,7 @@ describe('PaddleIntegration', () => {
             expect(status2.subscription_plan_id).to.equal(updatePayload.old_subscription_plan_id)
             expect(status2.vendor_user_id).to.equal(updatePayload.user_id)
 
-            const status3 = sub.status[3]
+            const status3 = sub.status[2]
             // ensure we changed these values
             expect(status3.currency).to.not.equal(createPayload.currency)
             expect(status3.next_bill_date).to.not.equal(createPayload.next_bill_date)
@@ -183,7 +179,7 @@ describe('PaddleIntegration', () => {
             )
             await paddleIntegration.addSubscriptionCancelledStatus(payload)
 
-            const { subscription: sub } = await storage.get(ids)
+            const sub = await storage.get(ids)
             const status = await subscriptionInfo.getAllSubscriptionsStatus(sub)
             expect(status[createPayload.subscription_plan_id]).to.be.false
         })
@@ -206,11 +202,11 @@ describe('PaddleIntegration', () => {
             )
             await paddleIntegration.addSubscriptionCancelledStatus(cancelPayload)
 
-            const { subscription: sub } = await storage.get(ids)
+            const sub = await storage.get(ids)
             expect(sub.payments).to.have.length(0)
-            expect(sub.status).to.have.length(3)
+            expect(sub.status).to.have.length(2)
 
-            const status = sub.status[2]
+            const status = sub.status[1]
             expect(status.alert_id).to.equal(cancelPayload.alert_id)
             expect(status.alert_name).to.equal(cancelPayload.alert_name)
             expect(status.currency).to.equal(cancelPayload.currency)
@@ -238,7 +234,7 @@ describe('PaddleIntegration', () => {
             })
             await paddleIntegration.addSubscriptionCreatedStatus(createPayload)
 
-            let { subscription: sub } = await storage.get(ids)
+            let sub = await storage.get(ids)
             expect(sub.payments).to.have.length(0)
 
             const paymentPayload = Object.assign({}, paymentSucceded, {
@@ -247,7 +243,7 @@ describe('PaddleIntegration', () => {
             })
             await paddleIntegration.addSuccessfulPayment(paymentPayload);
 
-            ({ subscription: sub } = await storage.get(ids))
+            (sub = await storage.get(ids))
             expect(sub.payments).to.have.length(1)
 
             const [payment] = sub.payments
@@ -270,7 +266,7 @@ describe('PaddleIntegration', () => {
             })
             await paddleIntegration.addRefundedPayment(paymentPayload)
 
-            const { subscription: sub } = await storage.get(ids)
+            const sub = await storage.get(ids)
             expect(sub.payments).to.have.length(1)
 
             const [payment] = sub.payments
@@ -294,7 +290,7 @@ describe('PaddleIntegration', () => {
             })
             await paddleIntegration.addFailedPayment(paymentPayload)
 
-            const { subscription: sub } = await storage.get(ids)
+            const sub = await storage.get(ids)
             expect(sub.payments).to.have.length(1)
 
             const [payment] = sub.payments

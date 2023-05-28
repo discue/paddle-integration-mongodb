@@ -1,6 +1,16 @@
-const emulator = require('./emulators-runner')
-before(function () {
-    this.timeout(60_000) // it's real slow sometimes on windows
-    return emulator.start()
+const { MongoMemoryServer } = require('mongodb-memory-server')
+
+let mongod
+
+before(async function () {
+    // This will create an new instance of "MongoMemoryServer" and automatically start it
+    mongod = await MongoMemoryServer.create({
+        instance: {
+            port: 27017
+        }
+    })
 })
-after(emulator.stop)
+
+after(function () {
+    return mongod.stop()
+})

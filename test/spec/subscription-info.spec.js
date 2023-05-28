@@ -9,11 +9,11 @@ const paymentSucceded = require('../fixtures/payment-succeeded')
 const paymentFailed = require('../fixtures/payment-failed')
 const paymentRefunded = require('../fixtures/payment-refunded')
 
-const { SubscriptionInfo, SubscriptionHooks } = require('../../lib/index')
-const resourceName = '_subscription'
-const subscriptions = new SubscriptionHooks('api_client', { resourceName })
-const subscriptionInfo = new SubscriptionInfo('api_client', { hookStorage: subscriptions, resourceName })
-const storage = require('../../lib/firestore/nested-firestore-resource')({ documentPath: 'api_client', resourceName: 'api_clients' })
+const { SubscriptionHooks, SubscriptionInfo, subscriptionStorage } = require('../../lib/index')
+const storage = subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const subscriptions = new SubscriptionHooks({ storage })
+const subscriptionInfo = new SubscriptionInfo({ storage })
+
 const { customData } = require('../../lib/client/index')
 const encode = require('../../lib/html-encoder.js')
 
@@ -26,16 +26,14 @@ describe('SubscriptionInfo', () => {
 
     beforeEach(async () => {
         ids = [uuid()]
-        await storage.put(ids, {})
         await subscriptions.addSubscriptionPlaceholder(ids)
     })
 
     describe('.getSubscriptionInfo', () => {
         beforeEach(async () => {
-            const subscriptionId = uuid()
             const createPayload = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     event_time: new Date().toISOString()
                 }
@@ -44,14 +42,14 @@ describe('SubscriptionInfo', () => {
 
             const paymentSuccesfulPayload = Object.assign({}, paymentSucceded, {
                 event_time: '2017-08-08 10:47:47',
-                subscription_id: subscriptionId,
+                subscription_id: ids.at(0),
                 passthrough: JSON.stringify(customData(ids)),
             })
             await subscriptions.addSuccessfulPayment(paymentSuccesfulPayload)
 
             const paymentSuccesfulPayload2 = Object.assign({}, paymentSucceded, {
                 event_time: '2019-08-08 10:47:47',
-                subscription_id: subscriptionId,
+                subscription_id: ids.at(0),
                 passthrough: JSON.stringify(customData(ids)),
             })
             await subscriptions.addSuccessfulPayment(paymentSuccesfulPayload2)
@@ -185,10 +183,9 @@ describe('SubscriptionInfo', () => {
 
     describe('.cancelSubscription', () => {
         beforeEach(async () => {
-            const subscriptionId = uuid()
             const createPayload = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     event_time: new Date().toISOString()
                 }
@@ -196,7 +193,7 @@ describe('SubscriptionInfo', () => {
             await subscriptions.addSubscriptionCreatedStatus(createPayload)
         })
         it('throws if no subscription with plan was found', async () => {
-            const { [resourceName]: sub } = await storage.get(ids, true)
+            const sub = await storage.get(ids, true)
 
             try {
                 await subscriptionInfo.cancelSubscription(sub, '99')
@@ -216,7 +213,7 @@ describe('SubscriptionInfo', () => {
             )
 
             await subscriptions.addSubscriptionCancelledStatus(payload)
-            const { [resourceName]: sub } = await storage.get(ids, true)
+            const sub = await storage.get(ids, true)
 
             try {
                 await subscriptionInfo.cancelSubscription(sub, '8')
@@ -230,10 +227,9 @@ describe('SubscriptionInfo', () => {
 
     describe('.updateSubscription', () => {
         beforeEach(async () => {
-            const subscriptionId = uuid()
             const createPayload = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     event_time: new Date().toISOString()
                 }
@@ -241,7 +237,7 @@ describe('SubscriptionInfo', () => {
             await subscriptions.addSubscriptionCreatedStatus(createPayload)
         })
         it('throws if no subscription with plan was found', async () => {
-            const { [resourceName]: sub } = await storage.get(ids, true)
+            const sub = await storage.get(ids, true)
 
             try {
                 await subscriptionInfo.updateSubscription(sub, '99', '123')
@@ -261,7 +257,7 @@ describe('SubscriptionInfo', () => {
             )
 
             await subscriptions.addSubscriptionCancelledStatus(payload)
-            const { [resourceName]: sub } = await storage.get(ids, true)
+            const sub = await storage.get(ids, true)
 
             try {
                 await subscriptionInfo.updateSubscription(sub, '8', '123')
@@ -275,10 +271,9 @@ describe('SubscriptionInfo', () => {
 
     describe('.getAllSubscriptionsStatus', () => {
         it('takes the most recent status into account', async () => {
-            const subscriptionId = uuid()
             const createPayload = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     event_time: new Date().toISOString()
                 }
@@ -287,22 +282,21 @@ describe('SubscriptionInfo', () => {
 
             const payload = Object.assign({}, subscriptionCancelled,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     cancellation_effective_date: new Date(new Date().getTime()).toISOString()
                 }
             )
             await subscriptions.addSubscriptionCancelledStatus(payload)
 
-            const { [resourceName]: sub } = await storage.get(ids, true)
+            const sub = await storage.get(ids, true)
             const status = await subscriptionInfo.getAllSubscriptionsStatus(sub)
             expect(status[createPayload.subscription_plan_id]).to.be.false
         })
         it('also accepts clientId array', async () => {
-            const subscriptionId = uuid()
             const createPayload = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     event_time: new Date().toISOString()
                 }
@@ -311,7 +305,7 @@ describe('SubscriptionInfo', () => {
 
             const payload = Object.assign({}, subscriptionCancelled,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     cancellation_effective_date: new Date(new Date().getTime()).toISOString()
                 }
@@ -322,10 +316,9 @@ describe('SubscriptionInfo', () => {
             expect(status[createPayload.subscription_plan_id]).to.be.false
         })
         it('allows 10s clock drift', async () => {
-            const subscriptionId = uuid()
             const createPayload = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     event_time: new Date().toISOString()
                 }
@@ -334,22 +327,21 @@ describe('SubscriptionInfo', () => {
 
             const payload = Object.assign({}, subscriptionCancelled,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     cancellation_effective_date: new Date(new Date().getTime() + 9_000).toISOString()
                 }
             )
             await subscriptions.addSubscriptionCancelledStatus(payload)
 
-            const { [resourceName]: sub } = await storage.get(ids, true)
+            const sub = await storage.get(ids, true)
             const status = await subscriptionInfo.getAllSubscriptionsStatus(sub)
             expect(status[createPayload.subscription_plan_id]).to.be.false
         })
         it('ignores a status that starts more than 10s in the future', async () => {
-            const subscriptionId = uuid()
             const createPayload = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     event_time: new Date().toISOString()
                 }
@@ -358,22 +350,21 @@ describe('SubscriptionInfo', () => {
 
             const payload = Object.assign({}, subscriptionCancelled,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     cancellation_effective_date: new Date(new Date().getTime() + 50_000).toISOString()
                 }
             )
             await subscriptions.addSubscriptionCancelledStatus(payload)
 
-            const { [resourceName]: sub } = await storage.get(ids, true)
+            const sub = await storage.get(ids, true)
             const status = await subscriptionInfo.getAllSubscriptionsStatus(sub)
             expect(status[createPayload.subscription_plan_id]).to.be.true
         })
         it('accepts a second parameter that changes the target date', async () => {
-            const subscriptionId = uuid()
             const createPayload = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     event_time: new Date().toISOString()
                 }
@@ -382,22 +373,21 @@ describe('SubscriptionInfo', () => {
 
             const payload = Object.assign({}, subscriptionCancelled,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     cancellation_effective_date: new Date(new Date().getTime() + 1000).toISOString()
                 }
             )
             await subscriptions.addSubscriptionCancelledStatus(payload)
 
-            const { [resourceName]: sub } = await storage.get(ids, true)
+            const sub = await storage.get(ids, true)
             const subs = await subscriptionInfo.getAllSubscriptionsStatus(sub, new Date(new Date().getTime() + 5000))
             expect(subs[createPayload.subscription_plan_id]).to.be.false
         })
         it('returns status per subscription plan id', async () => {
-            const subscriptionId = uuid()
             const createPayload = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     event_time: new Date().toISOString()
                 }
@@ -406,7 +396,7 @@ describe('SubscriptionInfo', () => {
 
             const createPayload2 = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     subscription_plan_id: '9',
                     event_time: new Date().toISOString()
@@ -416,14 +406,14 @@ describe('SubscriptionInfo', () => {
 
             const payload = Object.assign({}, subscriptionCancelled,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     cancellation_effective_date: new Date(new Date().getTime() + 1000).toISOString()
                 }
             )
             await subscriptions.addSubscriptionCancelledStatus(payload)
 
-            const { [resourceName]: sub } = await storage.get(ids, true)
+            const sub = await storage.get(ids, true)
             const subs = await subscriptionInfo.getAllSubscriptionsStatus(sub, new Date(new Date().getTime() + 5000))
             expect(subs[createPayload.subscription_plan_id]).to.be.false
             expect(subs[createPayload2.subscription_plan_id]).to.be.true
@@ -432,11 +422,10 @@ describe('SubscriptionInfo', () => {
 
     describe('.getStartAndEndDates', () => {
         it('returns dates for each known subscription plan id', async () => {
-            const subscriptionId = uuid()
             const startTimeString = new Date().toISOString()
             const createPayload = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     event_time: startTimeString
                 }
@@ -444,7 +433,7 @@ describe('SubscriptionInfo', () => {
             await subscriptions.addSubscriptionCreatedStatus(createPayload)
             const createPayload2 = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     event_time: startTimeString,
                     subscription_plan_id: '4'
@@ -452,16 +441,15 @@ describe('SubscriptionInfo', () => {
             )
             await subscriptions.addSubscriptionCreatedStatus(createPayload2)
 
-            const { [resourceName]: sub } = await storage.get(ids, true)
+            const sub = await storage.get(ids, true)
             const dates = await subscriptionInfo.getStartAndEndDates(sub)
             expect(dates).to.have.keys(createPayload.subscription_plan_id, createPayload2.subscription_plan_id)
         })
         it('also accepts clientId array as parameter', async () => {
-            const subscriptionId = uuid()
             const startTimeString = new Date().toISOString()
             const createPayload = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     event_time: startTimeString
                 }
@@ -469,7 +457,7 @@ describe('SubscriptionInfo', () => {
             await subscriptions.addSubscriptionCreatedStatus(createPayload)
             const createPayload2 = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     event_time: startTimeString,
                     subscription_plan_id: '4'
@@ -477,35 +465,32 @@ describe('SubscriptionInfo', () => {
             )
             await subscriptions.addSubscriptionCreatedStatus(createPayload2)
 
-            const { [resourceName]: sub } = await storage.get(ids, true)
             const dates = await subscriptionInfo.getStartAndEndDates(ids)
             expect(dates).to.have.keys(createPayload.subscription_plan_id, createPayload2.subscription_plan_id)
         })
         it('returns only start date if theres no end date', async () => {
-            const subscriptionId = uuid()
             const startTimeString = new Date().toISOString()
             const createPayload = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     event_time: startTimeString
                 }
             )
             await subscriptions.addSubscriptionCreatedStatus(createPayload)
 
-            const { [resourceName]: sub } = await storage.get(ids, true)
+            const sub = await storage.get(ids, true)
             const { [createPayload.subscription_plan_id]: { start, end } } = await subscriptionInfo.getStartAndEndDates(sub)
             expect(start).to.equal(startTimeString)
             expect(end).to.be.null
         })
         it('returns start and end date', async () => {
-            const subscriptionId = uuid()
             const startTimeString = new Date().toISOString()
             const endTimeString = new Date(new Date().getTime() + 1000 * 3600 * 24 * 33).toISOString()
 
             const createPayload = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     event_time: startTimeString
                 }
@@ -514,14 +499,14 @@ describe('SubscriptionInfo', () => {
 
             const payload = Object.assign({}, subscriptionCancelled,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     cancellation_effective_date: endTimeString
                 }
             )
             await subscriptions.addSubscriptionCancelledStatus(payload)
 
-            const { [resourceName]: sub } = await storage.get(ids, true)
+            const sub = await storage.get(ids, true)
             const { [createPayload.subscription_plan_id]: { start, end } } = await subscriptionInfo.getStartAndEndDates(sub, new Date(2099, 1))
             expect(start).to.equal(startTimeString)
             expect(end).to.equal(endTimeString)
@@ -530,24 +515,23 @@ describe('SubscriptionInfo', () => {
 
     describe('.getPaymentsTrail', () => {
         beforeEach(async () => {
-            const subscriptionId = uuid()
             const createPayload = Object.assign({}, subscriptionCreated, {
                 event_time: '2018-08-08 10:47:47',
-                subscription_id: subscriptionId,
+                subscription_id: ids.at(0),
                 passthrough: JSON.stringify(customData(ids)),
             })
             await subscriptions.addSubscriptionCreatedStatus(createPayload)
 
             const paymentSuccesfulPayload = Object.assign({}, paymentSucceded, {
                 event_time: '2017-08-08 10:47:47',
-                subscription_id: subscriptionId,
+                subscription_id: ids.at(0),
                 passthrough: JSON.stringify(customData(ids)),
             })
             await subscriptions.addSuccessfulPayment(paymentSuccesfulPayload)
 
             const paymentSuccesfulPayload2 = Object.assign({}, paymentSucceded, {
                 event_time: '2017-08-08 10:47:47',
-                subscription_id: subscriptionId,
+                subscription_id: ids.at(0),
                 subscription_plan_id: '4',
                 passthrough: JSON.stringify(customData(ids)),
             })
@@ -555,7 +539,7 @@ describe('SubscriptionInfo', () => {
 
             const paymentFailedPayload = Object.assign({}, paymentFailed, {
                 event_time: '2022-08-08 10:47:47',
-                subscription_id: subscriptionId,
+                subscription_id: ids.at(0),
                 subscription_plan_id: '4',
                 passthrough: JSON.stringify(customData(ids)),
             })
@@ -563,7 +547,7 @@ describe('SubscriptionInfo', () => {
 
             const paymentRefundedPayload1 = Object.assign({}, paymentRefunded, {
                 event_time: '2024-08-08 10:47:47',
-                subscription_id: subscriptionId,
+                subscription_id: ids.at(0),
                 subscription_plan_id: '4',
                 passthrough: JSON.stringify(customData(ids)),
             })
@@ -572,20 +556,20 @@ describe('SubscriptionInfo', () => {
 
             const paymentRefundedPayload2 = Object.assign({}, paymentRefunded, {
                 event_time: '2014-08-08 10:47:47',
-                subscription_id: subscriptionId,
+                subscription_id: ids.at(0),
                 passthrough: JSON.stringify(customData(ids)),
             })
             await subscriptions.addRefundedPayment(paymentRefundedPayload2)
 
             const paymentFailedPayload2 = Object.assign({}, paymentFailed, {
                 event_time: '2012-08-08 10:47:47',
-                subscription_id: subscriptionId,
+                subscription_id: ids.at(0),
                 passthrough: JSON.stringify(customData(ids)),
             })
             await subscriptions.addFailedPayment(paymentFailedPayload2)
         })
         it('returns payments sorted descending', async () => {
-            const { [resourceName]: sub } = await storage.get(ids, true)
+            const sub = await storage.get(ids, true)
             const trail = await subscriptionInfo.getPaymentsTrail(sub)
 
             const sorted = Object.values(trail).every((payments) => {
@@ -616,7 +600,7 @@ describe('SubscriptionInfo', () => {
             expect(sorted).to.be.true
         })
         it('returns a sorted listed of payments per subscription plan id 8', async () => {
-            const { [resourceName]: sub } = await storage.get(ids, true)
+            const sub = await storage.get(ids, true)
             const trail = await subscriptionInfo.getPaymentsTrail(sub)
 
             expect(trail).to.have.keys(paymentSucceded.subscription_plan_id, '4')
@@ -665,7 +649,7 @@ describe('SubscriptionInfo', () => {
         })
 
         it('returns a sorted listed of payments per subscription plan id 4 and ignores refunded payment hook', async () => {
-            const { [resourceName]: sub } = await storage.get(ids, true)
+            const sub = await storage.get(ids, true)
             const trail = await subscriptionInfo.getPaymentsTrail(sub)
 
             expect(trail).to.have.keys(paymentSucceded.subscription_plan_id, '4')
@@ -707,14 +691,10 @@ describe('SubscriptionInfo', () => {
 
     describe('.getStatusTrail', () => {
         beforeEach(async () => {
-            const subscriptionId = uuid()
-
-            await subscriptions.addSubscriptionPlaceholder(ids)
-
             const createPayload = Object.assign({}, subscriptionCreated,
                 {
                     event_time: new Date().toISOString(),
-                    subscription_id: subscriptionId, passthrough: JSON.stringify(customData(ids))
+                    subscription_id: ids.at(0), passthrough: JSON.stringify(customData(ids))
                 }
             )
             await subscriptions.addSubscriptionCreatedStatus(createPayload)
@@ -722,14 +702,14 @@ describe('SubscriptionInfo', () => {
             const updatePayload = Object.assign({}, subscriptionUpdated,
                 {
                     event_time: new Date().toISOString(),
-                    subscription_id: subscriptionId, passthrough: JSON.stringify(customData(ids))
+                    subscription_id: ids.at(0), passthrough: JSON.stringify(customData(ids))
                 }
             )
             await subscriptions.addSubscriptionUpdatedStatus(updatePayload)
 
             const cancelPayload = Object.assign({}, subscriptionCancelled,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     cancellation_effective_date: new Date().toISOString(),
                 }
@@ -738,7 +718,7 @@ describe('SubscriptionInfo', () => {
         })
 
         it('returns a sorted listed of status per id', async () => {
-            const { [resourceName]: sub } = await storage.get(ids, true)
+            const sub = await storage.get(ids, true)
             const trail = await subscriptionInfo.getStatusTrail(sub)
             const subscriptionTrail = trail[subscriptionCreated.subscription_plan_id]
             expect(subscriptionTrail).to.have.length(3)
@@ -765,12 +745,10 @@ describe('SubscriptionInfo', () => {
     })
 
     describe('.findSubscriptionIdByPlanId', () => {
-        let subscriptionId
         beforeEach(async () => {
-            subscriptionId = uuid()
             const createPayload = Object.assign({}, subscriptionCreated,
                 {
-                    subscription_id: subscriptionId,
+                    subscription_id: ids.at(0),
                     passthrough: JSON.stringify(customData(ids)),
                     event_time: new Date().toISOString()
                 }
@@ -779,7 +757,7 @@ describe('SubscriptionInfo', () => {
         })
         it('returns the subscription id', async () => {
             const id = await subscriptionInfo.findSubscriptionIdByPlanId(ids, '8')
-            expect(id).to.equal(subscriptionId)
+            expect(id).to.equal(ids.at(0))
         })
         it('returns null if no subscription id was found for plan', async () => {
             const id = await subscriptionInfo.findSubscriptionIdByPlanId(ids, '18')
