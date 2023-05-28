@@ -49,7 +49,7 @@
     "standard-version": "^9.5.0"
   },
   "dependencies": {
-    "got": "^12.5.3",
+    "got": "^13.0.0",
     "html-entities": "^2.3.3"
   },
   "optionalDependencies": {
