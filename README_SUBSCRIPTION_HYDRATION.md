@@ -17,7 +17,7 @@ Uses the `subscription_id` to contact Paddle API and checks whether the given lo
 ```js
 'use strict'
 
-const paddleIntegration = require('@discue/paddle-firebase-integration')
+const paddleIntegration = require('@discue/paddle-integration-mongodb')
 
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
 const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
@@ -97,7 +97,7 @@ Uses the `subscription_id` to contact Paddle API and checks whether the given lo
 ```js
 'use strict'
 
-const paddleIntegration = require('@discue/paddle-firebase-integration')
+const paddleIntegration = require('@discue/paddle-integration-mongodb')
 
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
 const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })

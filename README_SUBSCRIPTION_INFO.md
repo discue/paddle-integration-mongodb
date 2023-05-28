@@ -17,7 +17,7 @@ Returns all available information about a subscription. Will include the `start`
 ```js
 'use strict'
 
-const paddleIntegration = require('@discue/paddle-firebase-integration')
+const paddleIntegration = require('@discue/paddle-integration-mongodb')
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
 // pass the path to the collection here
 const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
@@ -49,7 +49,7 @@ Returns list of payments for for all subscriptions associated with the given use
 ```js
 'use strict'
 
-const paddleIntegration = require('@discue/paddle-firebase-integration')
+const paddleIntegration = require('@discue/paddle-integration-mongodb')
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
 // pass the path to the collection here
 const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
@@ -79,7 +79,7 @@ Returns list of payments for for all subscriptions associated with the given use
 ```js
 'use strict'
 
-const paddleIntegration = require('@discue/paddle-firebase-integration')
+const paddleIntegration = require('@discue/paddle-integration-mongodb')
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
 // pass the path to the collection here
 const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
@@ -109,7 +109,7 @@ Will return the status for all subscriptions associated with the given user/api_
 ```js
 'use strict'
 
-const paddleIntegration = require('@discue/paddle-firebase-integration')
+const paddleIntegration = require('@discue/paddle-integration-mongodb')
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
 // pass the path to the collection here
 const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
@@ -140,7 +140,7 @@ Cancels a specific subscription plan. The subscription plan id must be passed.
 ```js
 'use strict'
 
-const paddleIntegration = require('@discue/paddle-firebase-integration')
+const paddleIntegration = require('@discue/paddle-integration-mongodb')
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
 // pass the path to the collection here
 const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
@@ -165,7 +165,7 @@ Updates a subscription plan. The previous one will be cancelled and the new one 
 ```js
 'use strict'
 
-const paddleIntegration = require('@discue/paddle-firebase-integration')
+const paddleIntegration = require('@discue/paddle-integration-mongodb')
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
 // pass the path to the collection here
 const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })

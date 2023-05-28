@@ -33,7 +33,7 @@ To create a new instance, four parameters need to be passed to the constructor:
 ```js
 'use strict'
 
-const paddleIntegration = require('@discue/paddle-firebase-integration')
+const paddleIntegration = require('@discue/paddle-integration-mongodb')
 const paddleApi = new paddleIntegration.Api({ 
         useSandbox: true, 
         authCode: process.env.AUTH_CODE, 

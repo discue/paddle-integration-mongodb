@@ -17,7 +17,7 @@ const express = require('express')
 const app = express()
 const port = process.env.PORT || 3456
 
-const paddleIntegration = require('@discue/paddle-firebase-integration')
+const paddleIntegration = require('@discue/paddle-integration-mongodb')
 const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
 const subscriptions = new paddleIntegration.SubscriptionHooks({ storage })
 
