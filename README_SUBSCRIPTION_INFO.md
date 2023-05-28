@@ -9,7 +9,7 @@ High level wrapper for Paddle API. Manages locally stored data and interacts wit
   - [Cancel a subscription](#cancel-a-subscription)
   - [Update a subscription plan](#update-a-subscription-plan)
 
-:information_source: The API component of this module will be loaded asynchronously to preserve backwards compatibility with commonjs. This is achieved by returning a proxy for the entire `paddle-integration-firestore` module. The reactivity a proxy provides allows us to add the API module then at a later point to the module instance. The drawback is, we do not return named exports and, therefore, cannot not enable destructuring in ES modules.
+:information_source: The API component of this module will be loaded asynchronously to preserve backwards compatibility with commonjs. This is achieved by returning a proxy for the entire `paddle-integration-mongodb` module. The reactivity a proxy provides allows us to add the API module then at a later point to the module instance. The drawback is, we do not return named exports and, therefore, cannot not enable destructuring in ES modules.
 
 ## Get subscription infos
 Returns all available information about a subscription. Will include the `start` and (optionally) `end` date, the `status_trail`, and the `payments_trail` and a property indicating whether the subscription is currently `active`.
@@ -20,7 +20,8 @@ Returns all available information about a subscription. Will include the `start`
 const paddleIntegration = require('@discue/paddle-firebase-integration')
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
 // pass the path to the collection here
-const subscriptions = new paddleIntegration.SubscriptionInfo('api_clients', { api })
+const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const subscriptions = new paddleIntegration.SubscriptionInfo({ api, storage })
 
 const PREMIUM_SUBSCRIPTION_PLAN_ID = '123'
 
@@ -51,7 +52,8 @@ Returns list of payments for for all subscriptions associated with the given use
 const paddleIntegration = require('@discue/paddle-firebase-integration')
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
 // pass the path to the collection here
-const subscriptions = new paddleIntegration.SubscriptionInfo('api_clients', { api })
+const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const subscriptions = new paddleIntegration.SubscriptionInfo({ api, storage })
 
 const PREMIUM_SUBSCRIPTION_PLAN_ID = '123'
 
@@ -80,7 +82,8 @@ Returns list of payments for for all subscriptions associated with the given use
 const paddleIntegration = require('@discue/paddle-firebase-integration')
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
 // pass the path to the collection here
-const subscriptions = new paddleIntegration.SubscriptionInfo('api_clients', { api })
+const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const subscriptions = new paddleIntegration.SubscriptionInfo({ api, storage })
 
 const PREMIUM_SUBSCRIPTION_PLAN_ID = '123'
 
@@ -109,7 +112,8 @@ Will return the status for all subscriptions associated with the given user/api_
 const paddleIntegration = require('@discue/paddle-firebase-integration')
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
 // pass the path to the collection here
-const subscriptions = new paddleIntegration.SubscriptionInfo('api_clients', { api })
+const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const subscriptions = new paddleIntegration.SubscriptionInfo({ api, storage })
 
 const PREMIUM_SUBSCRIPTION_PLAN_ID = '123'
 
@@ -139,7 +143,8 @@ Cancels a specific subscription plan. The subscription plan id must be passed.
 const paddleIntegration = require('@discue/paddle-firebase-integration')
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
 // pass the path to the collection here
-const subscriptions = new paddleIntegration.SubscriptionInfo('api_clients', { api })
+const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const subscriptions = new paddleIntegration.SubscriptionInfo({ api, storage })
 
 const PREMIUM_SUBSCRIPTION_PLAN_ID = '123'
 
@@ -163,7 +168,8 @@ Updates a subscription plan. The previous one will be cancelled and the new one 
 const paddleIntegration = require('@discue/paddle-firebase-integration')
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
 // pass the path to the collection here
-const subscriptions = new paddleIntegration.SubscriptionInfo('api_clients', { api })
+const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const subscriptions = new paddleIntegration.SubscriptionInfo({ api, storage })
 
 const PREMIUM_SUBSCRIPTION_PLAN_ID = '123'
 

@@ -11,13 +11,13 @@ const express = require('express')
 const app = express()
 const port = process.env.PORT || 3456
 
-const paddleIntegrationFirestore = require('@discue/paddle-firebase-integration')
-// pass the path to the collection here
-const subscriptions = new paddleIntegrationFirestore.SubscriptionHooks('api_clients')
+const paddleIntegration = require('@discue/paddle-integration-mongodb')
+const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const subscriptions = new paddleIntegration.SubscriptionHooks({ storage })
 
 // register body parser first and middleware second
-app.use('/_/payments', paddleIntegrationFirestore.bodyparser())
-app.post('/_/payments', paddleIntegrationFirestore.middleware(subscriptions))
+app.use('/_/payments', paddleIntegration.bodyparser())
+app.post('/_/payments', paddleIntegration.middleware(subscriptions))
 
 module.exports = app.listen(port)
 ```

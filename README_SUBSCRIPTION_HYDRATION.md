@@ -7,7 +7,7 @@ Due to limitations of the Paddle API some assumptions will be made, like derivin
   - [Hydrate subscription created](#hydrate-subscription-created)
   - [Hydrate subscription cancelled](#hydrate-subscription-cancelled)
 
-:information_source: The API component of this module will be loaded asynchronously to preserve backwards compatibility with commonjs. This is achieved by returning a proxy for the entire `paddle-integration-firestore` module. The reactivity a proxy provides allows us to add the API module then at a later point to the module instance. The drawback is, we do not return named exports and, therefore, cannot not enable destructuring in ES modules.
+:information_source: The API component of this module will be loaded asynchronously to preserve backwards compatibility with commonjs. This is achieved by returning a proxy for the entire `paddle-integration-mongodb` module. The reactivity a proxy provides allows us to add the API module then at a later point to the module instance. The drawback is, we do not return named exports and, therefore, cannot not enable destructuring in ES modules.
 
 ## Hydrate subscription created
 Fetches subscription-related information from Paddle API to initialize the local storage. Has various safety measures to ensure users **cannot** hydrate their own subscriptions from already existing ones. 
@@ -18,10 +18,13 @@ Uses the `subscription_id` to contact Paddle API and checks whether the given lo
 'use strict'
 
 const paddleIntegration = require('@discue/paddle-firebase-integration')
-// initialize api and subscription hooks first
+
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
-const hookStorage = new paddleIntegration.SubscriptionHooks('api_clients')
-const subscriptions = new paddleIntegration.SubscriptionHydration('api_clients', { api, hookStorage })
+const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const hookStorage = new paddleIntegration.SubscriptionHooks({ storage })
+const subscriptionInfo = new paddleIntegration.SubscriptionInfo({ api, storage })
+
+const subscriptions = new paddleIntegration.SubscriptionHydration('api_clients', { api, hookStorage, subscriptionInfo })
 
 router.post('/subscriptions/initialize', async (req, res) => {
     const { _dsq: { clientId } = {}, body } = req
@@ -29,7 +32,7 @@ router.post('/subscriptions/initialize', async (req, res) => {
 
     await errorHandler(res, async () => {
         try {
-            await subscriptionInfo.hydrateSubscriptionCreated([clientId], { subscription_id }, checkout_id)
+            await subscriptions.hydrateSubscriptionCreated([clientId], { subscription_id }, checkout_id)
             sendOkNoContent({ res })
         } catch (e) {
             console.error(`Hydration failed with ${e} at ${e.stack}}`)
@@ -42,7 +45,7 @@ router.post('/subscriptions/initialize', async (req, res) => {
 
 In your front end application, use the `customData` function of this module to create the validation object, that is required during hydration. The `usePaddleCheckout` below will populate the `checkoutOptions` object with necessary values and open the Paddle checkout.
 ```js
-import { customData as createCustomData } from '@discue/paddle-integration-firestore/client'
+import { customData as createCustomData } from '@discue/paddle-integration-mongodb/client'
 
 export const checkoutDefaults = {
     allowQuantity: false,
@@ -95,10 +98,13 @@ Uses the `subscription_id` to contact Paddle API and checks whether the given lo
 'use strict'
 
 const paddleIntegration = require('@discue/paddle-firebase-integration')
-// initialize api and subscription hooks first
+
 const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
-const hookStorage = new paddleIntegration.SubscriptionHooks('api_clients')
-const subscriptions = new paddleIntegration.SubscriptionHydration('api_clients', { api, hookStorage })
+const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const hookStorage = new paddleIntegration.SubscriptionHooks({ storage })
+const subscriptionInfo = new paddleIntegration.SubscriptionInfo({ api, storage })
+
+const subscriptions = new paddleIntegration.SubscriptionHydration('api_clients', { api, hookStorage, subscriptionInfo })
 
 router.post('/subscriptions/cancel', async (req, res) => {
     const { _dsq: { clientId } = {}, body } = req
@@ -109,7 +115,7 @@ router.post('/subscriptions/cancel', async (req, res) => {
             // cancel subscription
             // ..
             // then hydrate cancellation
-            await subscriptionInfo.hydrateSubscriptionCancelled([clientId], { subscription_id })
+            await subscriptions.hydrateSubscriptionCancelled([clientId], { subscription_id })
             sendOkNoContent({ res })
         } catch (e) {
             console.error(`Hydration failed with ${e} at ${e.stack}}`)

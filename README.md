@@ -46,15 +46,14 @@ npm install @discue/paddle-integration-mongodb
 ### Preparing a New Subscription
 For the webhooks integration to work and to be able to correlate incoming hooks with the correct subscription, a placeholder needs to be created **before the checkout** and - afterward - a specific value must be passed to the [Checkout API](https://developer.paddle.com/guides/ZG9jOjI1MzU0MDQz-pass-parameters-to-the-checkout) via the `passthrough` parameter. This value will be returned by the `addSubscriptionPlaceholder` method.
 
-You can see in the example below, the Subscriptions constructor is called with the name of the target `collection` and the id of the target document. The id could be your `user` or `api_client` id. Remember: the target document must exist before creating the placeholder.
-
 ```js
 'use strict'
 
 const readApiClient = require('./lib/your-application/read-api-client')
 const paddleIntegration = require('@discue/paddle-integration-mongodb')
-// pass the path to the collection here
-const subscriptions = new paddleIntegration.SubscriptionHooks('api_clients')
+
+const storage = paddleIntegration.subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const subscriptions = new paddleIntegration.SubscriptionHooks({ storage })
 
 module.exports = async (req, res, next) => {
     // requires application to read api_client information 

@@ -19,7 +19,7 @@ Low level wrapper for Paddle API.
     - [List products](#list-products)
     - [Refund a payment](#refund-a-payment)
 
-:information_source: The API component will be loaded asynchronously to preserve backwards compatibility with commonjs. This is achieved by returning a proxy for the entire `paddle-integration-firestore` module. The reactivity a proxy provides allows us to add the API module then at a later point to the module instance. The drawback is, we do not return named exports and, therefore, cannot not enable destructuring in ES modules.
+:information_source: The API component will be loaded asynchronously to preserve backwards compatibility with commonjs. This is achieved by returning a proxy for the entire `paddle-integration-mongodb` module. The reactivity a proxy provides allows us to add the API module then at a later point to the module instance. The drawback is, we do not return named exports and, therefore, cannot not enable destructuring in ES modules.
 
 ## Creating a new instance
 To create a new instance, four parameters need to be passed to the constructor:
