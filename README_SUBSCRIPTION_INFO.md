@@ -153,7 +153,7 @@ module.exports = (req,res,next) => {
     // based on incoming information like a JWT or a cookie
     const apiClient = readApiClient(req)
     const { subscription } = apiClient
-    const subscriptionPlanId = '35141'
+    const subscriptionPlanId = '52451'
 
     await subscriptions.cancelSubscription(subscription subscriptionPlanId)
 }
@@ -178,7 +178,7 @@ module.exports = (req,res,next) => {
     // based on incoming information like a JWT or a cookie
     const apiClient = readApiClient(req)
     const { subscription } = apiClient
-    const subscriptionPlanId = '35141'
+    const subscriptionPlanId = '52451'
     const newSubscriptionPlanId = '55123'
 
     await subscriptions.updateSubscription(subscription subscriptionPlanId, newSubscriptionPlanId)

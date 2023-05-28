@@ -85,7 +85,7 @@ test('hydrate an active subscription', async ({ page }) => {
     subscription = await storage.get([apiClientId])
     // .. expect sub to be not active anymore after we reset all status and payments
     let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeFalsy()
+    expect(sub['52450']).toBeFalsy()
 
     // .. now hydrate status again ..
     await subscriptionHydration.hydrateSubscriptionCreated([apiClientId], { subscription_id: subscriptionId }, 'checkoutId')
@@ -93,7 +93,7 @@ test('hydrate an active subscription', async ({ page }) => {
     // .. and expect subscription to be active again
     subscription = await storage.get([apiClientId])
     sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeTruthy()
+    expect(sub['52450']).toBeTruthy()
 })
 
 test('hydrates the initial payment too', async ({ page }) => {
@@ -115,7 +115,7 @@ test('hydrates the initial payment too', async ({ page }) => {
     subscription = await storage.get([apiClientId])
     // .. expect sub to be not active anymore after we reset all status and payments
     let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeFalsy()
+    expect(sub['52450']).toBeFalsy()
 
     // .. now hydrate status again ..
     await subscriptionHydration.hydrateSubscriptionCreated([apiClientId], { subscription_id: subscriptionId }, 'checkoutId')
@@ -177,14 +177,14 @@ test('provides enough data for a hydrated status to look like a real one', async
     subscription = await storage.get([apiClientId])
     // .. expect sub to be not active anymore after we reset all status and payments
     let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeFalsy()
+    expect(sub['52450']).toBeFalsy()
 
     // .. now hydrate status again ..
     await subscriptionHydration.hydrateSubscriptionCreated([apiClientId], { subscription_id: subscriptionId }, 'checkoutId')
 
     // .. and expect subscription to be active again
     const subInfo = await subscriptionInfo.getSubscriptionInfo([apiClientId])
-    const { status_trail: statusTrail } = subInfo['33590']
+    const { status_trail: statusTrail } = subInfo['52450']
     const status = statusTrail.at(0)
 
     expect(status.cancel_url.startsWith('https')).toBeTruthy
@@ -210,14 +210,14 @@ test('provides enough data for a hydrated payment to look like a real one', asyn
     subscription = await storage.get([apiClientId])
     // .. expect sub to be not active anymore after we reset all status and payments
     let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeFalsy()
+    expect(sub['52450']).toBeFalsy()
 
     // .. now hydrate status again ..
     await subscriptionHydration.hydrateSubscriptionCreated([apiClientId], { subscription_id: subscriptionId }, 'checkoutId')
 
     // .. and expect subscription to be active again
     const subInfo = await subscriptionInfo.getSubscriptionInfo([apiClientId])
-    const { payments_trail: paymentsTrail } = subInfo['33590']
+    const { payments_trail: paymentsTrail } = subInfo['52450']
 
     expect(paymentsTrail).toHaveLength(1)
 
@@ -264,7 +264,7 @@ test('throws if subscription was created for another client', async ({ page }) =
     subscription = await storage.get([apiClientId])
     // .. expect sub to be not active anymore after we reset all status and payments
     let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeFalsy()
+    expect(sub['52450']).toBeFalsy()
 
     try {
         // add dummy client here
@@ -290,7 +290,7 @@ test('does not hydrate if status created was already received', async ({ page })
 
     // .. and check subscription is active to make sure setup was correct
     let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeTruthy()
+    expect(sub['52450']).toBeTruthy()
 
     // .. now hydrate status again ..
     await subscriptionHydration.hydrateSubscriptionCreated([apiClientId], { subscription_id: subscriptionId }, 'checkoutId')
@@ -317,11 +317,11 @@ test('hydrate a deleted subscription', async ({ page }) => {
     }
 
     // .. now hydrate status again ..
-    await subscriptionHydration.hydrateSubscriptionCancelled([apiClientId], '33590')
+    await subscriptionHydration.hydrateSubscriptionCancelled([apiClientId], '52450')
 
     subscription = await storage.get([apiClientId])
     let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription, new Date(new Date().getTime() + 1000 * 3600 * 24 * 35))
-    expect(sub['33590']).toBeFalsy()
+    expect(sub['52450']).toBeFalsy()
 
     const { status: subscriptionStatus } = subscription
     expect(subscriptionStatus).toHaveLength(3)

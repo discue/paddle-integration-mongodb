@@ -2,7 +2,7 @@
   "state": "processed",
   "checkout": {
     "checkout_id": "1192132-chre160193c950a-78630ce001",
-    "image_url": "https://paddle-sandbox.s3.amazonaws.com/user/7663/subs_33590_icon.png",
+    "image_url": "https://paddle-sandbox.s3.amazonaws.com/user/7663/subs_52450_icon.png",
     "title": "This is the title"
   },
   "custom_data": {
@@ -34,7 +34,7 @@
       "marketing_consent": false
     },
     "is_subscription": true,
-    "product_id": 33590,
+    "product_id": 52450,
     "subscription_id": 399372,
     "subscription_order_id": "525556-3834795",
     "access_management": {

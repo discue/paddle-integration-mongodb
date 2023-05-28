@@ -38,7 +38,7 @@ test('list all subscription payments', async () => {
 })
 
 test('filters subscription payments by plan (correct plan)', async () => {
-    const payments = await api.getSubscriptionPayments({ subscription_id: '399236' }, { plan: '33590' })
+    const payments = await api.getSubscriptionPayments({ subscription_id: '399236' }, { plan: '52450' })
     expect(payments).toHaveLength(1)
 })
 
@@ -58,12 +58,12 @@ test('filters subscription payments starting before 2020', async () => {
 })
 
 test('get plan by id', async () => {
-    const subs = await api.getPlan({ plan_id: 33590 })
+    const subs = await api.getPlan({ plan_id: 52450 })
     expect(subs.length).toEqual(1)
 })
 
 test('list one plan', async () => {
-    const subs = await api.listPlans(33590)
+    const subs = await api.listPlans(52450)
     expect(subs).toHaveLength(1)
 })
 

@@ -127,11 +127,11 @@ test('test cancel via subscription info and subscription object', async ({ page 
 
     // .. and check it is active
     let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeTruthy()
+    expect(sub['52450']).toBeTruthy()
 
     // cancel subscription ...
     subscription = await storage.get([apiClientId])
-    const success = await subscriptionInfo.cancelSubscription(subscription, '33590')
+    const success = await subscriptionInfo.cancelSubscription(subscription, '52450')
     expect(success).toBeTruthy()
     await page.waitForTimeout(10000)
 
@@ -143,11 +143,11 @@ test('test cancel via subscription info and subscription object', async ({ page 
     validateStatus(subscription.status[1])
 
     sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeTruthy()
+    expect(sub['52450']).toBeTruthy()
 
     // and not active next month (35 days)
     sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription, new Date(new Date().getTime() + 1000 * 3600 * 24 * 35))
-    expect(sub['33590']).toBeFalsy()
+    expect(sub['52450']).toBeFalsy()
 })
 
 test('test cancel via subscription info and client id array', async ({ page }) => {
@@ -164,10 +164,10 @@ test('test cancel via subscription info and client id array', async ({ page }) =
 
     // .. and check it is active
     let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeTruthy()
+    expect(sub['52450']).toBeTruthy()
 
     // cancel subscription ...
-    const success = await subscriptionInfo.cancelSubscription([apiClientId], '33590')
+    const success = await subscriptionInfo.cancelSubscription([apiClientId], '52450')
     expect(success).toBeTruthy()
     await page.waitForTimeout(10000)
 
@@ -179,11 +179,11 @@ test('test cancel via subscription info and client id array', async ({ page }) =
     validateStatus(subscription.status[1])
 
     sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeTruthy()
+    expect(sub['52450']).toBeTruthy()
 
     // and not active next month (35 days)
     sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription, new Date(new Date().getTime() + 1000 * 3600 * 24 * 35))
-    expect(sub['33590']).toBeFalsy()
+    expect(sub['52450']).toBeFalsy()
 })
 
 test('test cancel via api', async ({ page }) => {
@@ -200,7 +200,7 @@ test('test cancel via api', async ({ page }) => {
 
     // .. and check it is active
     let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeTruthy()
+    expect(sub['52450']).toBeTruthy()
 
     // cancel subscription ...
     const success = await api.cancelSubscription(subscription.status[0])
@@ -215,11 +215,11 @@ test('test cancel via api', async ({ page }) => {
     validateStatus(subscription.status[1])
 
     sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeTruthy()
+    expect(sub['52450']).toBeTruthy()
 
     // and not active next month (35 days)
     sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription, new Date(new Date().getTime() + 1000 * 3600 * 24 * 35))
-    expect(sub['33590']).toBeFalsy()
+    expect(sub['52450']).toBeFalsy()
 })
 
 test('test update via subscription info and subscription object', async ({ page }) => {
@@ -236,10 +236,10 @@ test('test update via subscription info and subscription object', async ({ page 
 
     // .. and check it is active
     let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeTruthy()
+    expect(sub['52450']).toBeTruthy()
 
     // update subscription plan via api ...
-    const updated = await subscriptionInfo.updateSubscription(subscription, '33590', '35141')
+    const updated = await subscriptionInfo.updateSubscription(subscription, '52450', '52451')
     expect(updated).toBeTruthy()
     await page.waitForTimeout(30000)
 
@@ -251,8 +251,8 @@ test('test update via subscription info and subscription object', async ({ page 
 
     // .. and still active
     sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['35141']).toBeTruthy()
-    expect(sub['33590']).toBeFalsy()
+    expect(sub['52451']).toBeTruthy()
+    expect(sub['52450']).toBeFalsy()
 })
 
 test('test update via subscription info and api client id', async ({ page }) => {
@@ -269,10 +269,10 @@ test('test update via subscription info and api client id', async ({ page }) => 
 
     // .. and check it is active
     let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeTruthy()
+    expect(sub['52450']).toBeTruthy()
 
     // update subscription plan via api ...
-    const updated = await subscriptionInfo.updateSubscription([apiClientId], '33590', '35141')
+    const updated = await subscriptionInfo.updateSubscription([apiClientId], '52450', '52451')
     expect(updated).toBeTruthy()
     await page.waitForTimeout(30000)
 
@@ -284,8 +284,8 @@ test('test update via subscription info and api client id', async ({ page }) => 
 
     // .. and still active
     sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['35141']).toBeTruthy()
-    expect(sub['33590']).toBeFalsy()
+    expect(sub['52451']).toBeTruthy()
+    expect(sub['52450']).toBeFalsy()
 })
 
 test('test update via api', async ({ page }) => {
@@ -302,10 +302,10 @@ test('test update via api', async ({ page }) => {
 
     // .. and check it is active
     let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeTruthy()
+    expect(sub['52450']).toBeTruthy()
 
     // update subscription plan via api ...
-    await api.updateSubscriptionPlan(subscription.status[0], '35141')
+    await api.updateSubscriptionPlan(subscription.status[0], '52451')
     await page.waitForTimeout(30000)
 
     // .. check  new status and payments added ...
@@ -316,8 +316,8 @@ test('test update via api', async ({ page }) => {
 
     // .. and still active
     sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['35141']).toBeTruthy()
-    expect(sub['33590']).toBeFalsy()
+    expect(sub['52451']).toBeTruthy()
+    expect(sub['52450']).toBeFalsy()
 })
 
 test('test refund via api', async ({ page }) => {
@@ -334,7 +334,7 @@ test('test refund via api', async ({ page }) => {
 
     // .. and check it is active
     let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeTruthy()
+    expect(sub['52450']).toBeTruthy()
 
     // refund subscription plan via api ...
     const refunded = await api.refundFullPayment(subscription.payments[0])
@@ -351,7 +351,7 @@ test('test refund via api', async ({ page }) => {
 
     // .. and still active
     sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeTruthy()
+    expect(sub['52450']).toBeTruthy()
 })
 
 test('test create, update, and cancel via ui', async ({ page }) => {
@@ -368,7 +368,7 @@ test('test create, update, and cancel via ui', async ({ page }) => {
 
     // .. and check it is active
     let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeTruthy()
+    expect(sub['52450']).toBeTruthy()
 
     // update payment method ...
     await updatePaymentMethod(page, subscription)
@@ -382,7 +382,7 @@ test('test create, update, and cancel via ui', async ({ page }) => {
 
     // .. and still active
     sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeTruthy()
+    expect(sub['52450']).toBeTruthy()
 
     // cancel subscription ...
     await cancelSubscription(page, subscription)
@@ -396,9 +396,9 @@ test('test create, update, and cancel via ui', async ({ page }) => {
     validateStatus(subscription.status[1])
 
     sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['33590']).toBeTruthy()
+    expect(sub['52450']).toBeTruthy()
 
     // and not active next month (35 days)
     sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription, new Date(new Date().getTime() + 1000 * 3600 * 24 * 35))
-    expect(sub['33590']).toBeFalsy()
+    expect(sub['52450']).toBeFalsy()
 })
