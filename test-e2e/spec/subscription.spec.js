@@ -84,11 +84,7 @@ async function updatePaymentMethod(page, subscription) {
     await page.locator('[data-testid="expiryYearInput"]').fill('2030')
     await page.locator('[data-testid="expiryYearInput"]').press('Tab')
     await page.locator('[data-testid="cardVerificationValueInput"]').fill('123')
-
-    const [page1] = await Promise.all([
-        // page.waitForEvent('popup'),
-        page.locator('[data-testid="cardPaymentFormSubmitButton"]').click()
-    ])
+    await page.locator('[data-testid="cardPaymentFormSubmitButton"]').click()
 
     // await page1.locator('text=Complete authentication').click()
     // await page.locator('[data-testid="subscriptionManagementSuccess"] div').first().click()
