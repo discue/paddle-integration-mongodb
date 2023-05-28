@@ -3,8 +3,9 @@
 const express = require('express')
 const app = express()
 
-const { SubscriptionHooks, middleware : Middleware } = require('../lib/index')
-const subscriptions  = new SubscriptionHooks('api_client')
+const { SubscriptionHooks, middleware: Middleware, subscriptionStorage } = require('../lib/index')
+const storage = subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const subscriptions = new SubscriptionHooks({ storage })
 
 const middleware = Middleware(subscriptions)
 
