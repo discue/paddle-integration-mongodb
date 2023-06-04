@@ -29,6 +29,10 @@ describe('SubscriptionInfo', () => {
         await subscriptions.addSubscriptionPlaceholder(ids)
     })
 
+    after(() => {
+        return storage.close()
+    })
+
     describe('.getSubscriptionInfo', () => {
         beforeEach(async () => {
             const createPayload = Object.assign({}, subscriptionCreated,

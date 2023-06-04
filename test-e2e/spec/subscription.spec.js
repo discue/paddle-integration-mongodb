@@ -30,6 +30,8 @@ test.afterAll(async () => {
         const subscription = subscriptions[i]
         await api.cancelSubscription(subscription)
     }
+
+    return storage.close()
 })
 
 test.afterAll(async () => {

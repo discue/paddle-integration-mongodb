@@ -26,6 +26,10 @@ describe('PaddleIntegration', () => {
         await paddleIntegration.addSubscriptionPlaceholder(ids)
     })
 
+    after(() => {
+        return storage.close()
+    })
+
     describe('.addSubscription', () => {
         it('creates an aactive subscription', async () => {
             const createPayload = Object.assign({}, subscriptionCreated, { passthrough: JSON.stringify(customData(ids)) })

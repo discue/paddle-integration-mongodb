@@ -48,6 +48,7 @@
     "standard-version": "^9.5.0"
   },
   "dependencies": {
+    "@discue/mongodb-resource-client": "^0.2.0",
     "got": "^13.0.0",
     "html-entities": "^2.3.3"
   },

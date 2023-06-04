@@ -35,6 +35,8 @@ test.afterAll(async () => {
         const subscription = subscriptions[i]
         await api.cancelSubscription(subscription)
     }
+
+    return storage.close()
 })
 
 test.afterAll(async () => {
@@ -268,7 +270,7 @@ test('throws if subscription was created for another client', async ({ page }) =
 
     try {
         // add dummy client here
-        await storage.put(['123'], {
+        await storage.create(['123'], {
             subscription: {
                 status: []
             }
