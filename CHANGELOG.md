@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.25.0](https://github.com/discue/paddle-integration-mongodb/compare/v0.24.0...v0.25.0) (2023-06-10)
+
+
+### Features
+
+* **storage:** allow passing mongo client ([8b962fe](https://github.com/discue/paddle-integration-mongodb/commit/8b962feda08f821b7ebd2c96aa23bf7feaf98c2e))
+* use discue mongo db storage client ([f8c2707](https://github.com/discue/paddle-integration-mongodb/commit/f8c2707547ffa13509aa0e96dffd11c73568ba7a))
+
+
+### Chores
+
+* **deps-dev:** bump puppeteer from 20.4.0 to 20.5.0 ([c44dd79](https://github.com/discue/paddle-integration-mongodb/commit/c44dd79b6d67f41a33f9b90d044962d043567a11))
+* **deps:** bump actions/stale from 7 to 8 ([75ad3fd](https://github.com/discue/paddle-integration-mongodb/commit/75ad3fd8ae4b26c16596fadb9bbda25408a4acfb))
+* **deps:** update dependencies ([e853f1b](https://github.com/discue/paddle-integration-mongodb/commit/e853f1b0e8a48ca6ef6a3e5af133879a6a8dff2f))
+
 ## [0.24.0](https://github.com/discue/paddle-integration-mongodb/compare/v0.1.0...v0.24.0) (2023-05-28)
 
 
