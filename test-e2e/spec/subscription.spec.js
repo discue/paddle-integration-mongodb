@@ -5,7 +5,7 @@ const { test, expect } = require('@playwright/test')
 const { expect: chaiExpect } = require('chai')
 
 const index = require('../../lib/index')
-const storage = index.subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const storage = index.subscriptionStorage({ url: 'mongodb://127.0.0.1:27017' })
 const subscriptions = new index.SubscriptionHooks({ storage })
 
 let subscriptionInfo

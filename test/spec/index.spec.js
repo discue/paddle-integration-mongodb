@@ -10,7 +10,7 @@ const paymentFailed = require('../fixtures/payment-failed')
 const paymentRefunded = require('../fixtures/payment-refunded')
 
 const { SubscriptionHooks, htmlEncoder, SubscriptionInfo, subscriptionStorage } = require('../../lib/index')
-const storage = subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const storage = subscriptionStorage({ url: 'mongodb://127.0.0.1:27017' })
 const paddleIntegration = new SubscriptionHooks({ storage })
 const subscriptionInfo = new SubscriptionInfo({ hookStorage: paddleIntegration })
 
