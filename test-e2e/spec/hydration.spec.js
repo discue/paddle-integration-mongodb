@@ -39,7 +39,7 @@ test.afterAll(async () => {
     return storage.close()
 })
 
-async function createNewSubscription(page, apiClientId) {  
+async function createNewSubscription(page, apiClientId) {
     setTimeout(async () => {
         const nextYear = new Date().getFullYear() + 1
         await page.goto(`http://localhost:3333/checkout.html?clientId=${apiClientId}`)
@@ -68,7 +68,7 @@ test('hydrate an active subscription', async ({ page }) => {
     const { order } = result
     const { subscription_id: subscriptionId } = order
 
-    let subscription  = await storage.get([apiClientId])
+    let subscription = await storage.get([apiClientId])
 
     // remove status and payments to verify hydration process
     await storage.update([apiClientId], {
@@ -98,7 +98,7 @@ test('hydrates the initial payment too', async ({ page }) => {
     const { order } = result
     const { subscription_id: subscriptionId } = order
 
-    let subscription  = await storage.get([apiClientId])
+    let subscription = await storage.get([apiClientId])
 
     // remove status and payments to verify hydration process
     await storage.update([apiClientId], {
@@ -160,7 +160,7 @@ test('provides enough data for a hydrated status to look like a real one', async
     const { order } = result
     const { subscription_id: subscriptionId } = order
 
-    let subscription  = await storage.get([apiClientId])
+    let subscription = await storage.get([apiClientId])
 
     // remove status and payments to verify hydration process
     await storage.update([apiClientId], {
@@ -193,7 +193,7 @@ test('provides enough data for a hydrated payment to look like a real one', asyn
     const { order } = result
     const { subscription_id: subscriptionId } = order
 
-    let subscription  = await storage.get([apiClientId])
+    let subscription = await storage.get([apiClientId])
 
     // remove status and payments to verify hydration process
     await storage.update([apiClientId], {
@@ -247,7 +247,7 @@ test('throws if subscription was created for another client', async ({ page }) =
     const { order } = result
     const { subscription_id: subscriptionId } = order
 
-    let subscription  = await storage.get([apiClientId])
+    let subscription = await storage.get([apiClientId])
 
     // remove status and payments to verify hydration process
     await storage.update([apiClientId], {
@@ -281,7 +281,7 @@ test('does not hydrate if status created was already received', async ({ page })
     // create new subscription and ...
     await createNewSubscription(page, apiClientId)
 
-    let subscription  = await storage.get([apiClientId])
+    let subscription = await storage.get([apiClientId])
     const subscriptionId = subscription.status[0].subscription_id
 
     // .. and check subscription is active to make sure setup was correct
@@ -301,7 +301,7 @@ test('hydrate a deleted subscription', async ({ page }) => {
     const result = await createNewSubscription(page, apiClientId)
     const { order } = result
 
-    let subscription  = await storage.get([apiClientId])
+    let subscription = await storage.get([apiClientId])
 
     try {
         await api.cancelSubscription(order)
