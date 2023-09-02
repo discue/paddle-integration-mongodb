@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.26.0](https://github.com/discue/paddle-integration-mongodb/compare/v0.25.0...v0.26.0) (2023-09-02)
+
+
+### Bug Fixes
+
+* **hydration:** fix calculation of subscription end date ([492ded3](https://github.com/discue/paddle-integration-mongodb/commit/492ded36871a893d221699fb89f7d8e38abad82a))
+
+
+### Chores
+
+* **ci:** use node lts ([9e940f8](https://github.com/discue/paddle-integration-mongodb/commit/9e940f86019e7660878bb0a4e9edcc6ace4eb96c))
+* **deps-dev:** bump @playwright/test from 1.35.0 to 1.35.1 ([e77f65b](https://github.com/discue/paddle-integration-mongodb/commit/e77f65b89ebad9f9976e7fdf338b9ed730bd8f6d))
+* **deps-dev:** bump @playwright/test from 1.35.1 to 1.37.1 ([d6da63b](https://github.com/discue/paddle-integration-mongodb/commit/d6da63bab76e108f2b6845d7301da01e0de4472e))
+* **deps-dev:** bump chai from 4.3.7 to 4.3.8 ([43b8bfb](https://github.com/discue/paddle-integration-mongodb/commit/43b8bfb0eb13ca60b46ea5eea5871d289422c3ac))
+* **deps-dev:** bump eslint from 8.42.0 to 8.44.0 ([cc2271a](https://github.com/discue/paddle-integration-mongodb/commit/cc2271af3500dfa9cd66cd5bd996345fa28b5f0e))
+* **deps-dev:** bump eslint from 8.44.0 to 8.46.0 ([d8ba969](https://github.com/discue/paddle-integration-mongodb/commit/d8ba9697410a0cb5cec7b3f4992a23641c6f111e))
+* **deps-dev:** bump eslint from 8.46.0 to 8.48.0 ([c3acf82](https://github.com/discue/paddle-integration-mongodb/commit/c3acf82643829180220ebfbd8b85360afa2df570))
+* **deps-dev:** bump mongodb-memory-server from 8.13.0 to 8.15.1 ([0883c4b](https://github.com/discue/paddle-integration-mongodb/commit/0883c4b444cdff43b165fe97a33c18d93e8f8457))
+* **deps-dev:** bump nodemon from 2.0.22 to 3.0.1 ([ee85eb8](https://github.com/discue/paddle-integration-mongodb/commit/ee85eb8c060370abc35cc3bcb2a828dc09d48c3c))
+* **deps-dev:** bump puppeteer from 20.5.0 to 20.7.4 ([7d8d6cb](https://github.com/discue/paddle-integration-mongodb/commit/7d8d6cb055e3918019126bfc94dbeae88ef4da2f))
+* **deps-dev:** bump puppeteer from 20.7.4 to 20.9.0 ([7fd5f4a](https://github.com/discue/paddle-integration-mongodb/commit/7fd5f4a09729635df2db4675b45f82a004c0f428))
+* **deps:** bump @discue/mongodb-resource-client from 0.3.0 to 0.7.0 ([99ec590](https://github.com/discue/paddle-integration-mongodb/commit/99ec5904c870f2541a003151a62c75807fee81ff))
+* **deps:** bump @discue/mongodb-resource-client from 0.7.0 to 0.8.0 ([042af03](https://github.com/discue/paddle-integration-mongodb/commit/042af033ebf0aadaa04d8d6f6ddc13d7d5c24fc3))
+* **deps:** bump html-entities from 2.3.5 to 2.4.0 ([7eca6a4](https://github.com/discue/paddle-integration-mongodb/commit/7eca6a442a89cda40f503d06889eb70e2d92348f))
+* **deps:** bump mongodb from 5.7.0 to 6.0.0 ([1151819](https://github.com/discue/paddle-integration-mongodb/commit/1151819d123c0f717a47ad201f3c914fe279fe29))
+* **deps:** update resource client ([7684454](https://github.com/discue/paddle-integration-mongodb/commit/7684454807bb717a08fe6fad800698c1f5e43112))
+* **hooks:** also store effective cancel date ([7e337dc](https://github.com/discue/paddle-integration-mongodb/commit/7e337dca6b630c66248291cbff12f552f4de0418))
+* update date field selector ([9957077](https://github.com/discue/paddle-integration-mongodb/commit/9957077b4275ff8fc486437dcb57d6101205374f))
+
 ## [0.25.0](https://github.com/discue/paddle-integration-mongodb/compare/v0.24.0...v0.25.0) (2023-06-10)
 
 
