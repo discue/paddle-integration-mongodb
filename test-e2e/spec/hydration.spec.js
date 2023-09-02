@@ -346,16 +346,18 @@ test('hydrate a deleted subscription', async ({ page }) => {
     expect(status.vendor_user_id).toEqual(subscriptionFromApi.user_id)
 
     const signUpDate = new Date(subscriptionFromApi.signup_date)
-    const expectedEndDate = new Date(signUpDate.getTime())
+    const expectedEndDate = new Date(signUpDate.getTime() + 33 * 3600 * 1000 * 24)
 
-    while (expectedEndDate.getDate() !== signUpDate.getDate() - 1) {
-        expectedEndDate.setTime(expectedEndDate.getTime() + 1000 * 60 * 60 * 24)
+    for (let i = 0; i < 33 && expectedEndDate.getDate() !== signUpDate.getDate(); i++) {
+        expectedEndDate.setTime(expectedEndDate.getTime() - 1000 * 60 * 60 * 24)
     }
 
-    expectedEndDate.setUTCHours(23)
-    expectedEndDate.setUTCMinutes(59)
-    expectedEndDate.setUTCSeconds(59)
+    expectedEndDate.setTime(expectedEndDate.getTime() - 1000 * 60 * 60 * 24)
+
+    expectedEndDate.setUTCHours(12)
+    expectedEndDate.setUTCMinutes(0)
+    expectedEndDate.setUTCSeconds(0)
     expectedEndDate.setUTCMilliseconds(0)
 
-    expect(new Date(status.event_time).toISOString()).toEqual(expectedEndDate.toISOString())
+    expect(new Date(status.cancellation_effective_date).toISOString()).toEqual(expectedEndDate.toISOString())
 })
