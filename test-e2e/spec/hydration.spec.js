@@ -39,12 +39,6 @@ test.afterAll(async () => {
     return storage.close()
 })
 
-test.afterAll(async () => {
-    await new Promise((resolve) => {
-        setTimeout(resolve, 20000)
-    })
-})
-
 async function createNewSubscription(page, apiClientId) {  
     setTimeout(async () => {
         const nextYear = new Date().getFullYear() + 1

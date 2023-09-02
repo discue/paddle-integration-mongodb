@@ -34,12 +34,6 @@ test.afterAll(async () => {
     return storage.close()
 })
 
-test.afterAll(async () => {
-    await new Promise((resolve) => {
-        setTimeout(resolve, 20000)
-    })
-})
-
 /**
  * 
  * @param {import('@playwright/test').Page} page 
