@@ -53,6 +53,6 @@
     "html-entities": "^2.4.0"
   },
   "optionalDependencies": {
-    "mongodb": "^6.0.0"
+    "mongodb": "^6.1.0"
   }
 }
