@@ -48,7 +48,7 @@
     "standard-version": "^9.5.0"
   },
   "dependencies": {
-    "@discue/open-telemetry-tracing": "^0.6.0",
+    "@discue/open-telemetry-tracing": "^0.8.0",
     "@discue/mongodb-resource-client": "^0.25.0",
     "got": "^13.0.0",
     "html-entities": "^2.4.0"
