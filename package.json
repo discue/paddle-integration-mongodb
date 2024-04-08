@@ -16,7 +16,7 @@
   "scripts": {
     "test": "mocha test/spec/**/*.spec.js --check-leaks  --timeout 50000 --file test/global-mocha-setup.js",
     "test-e2e": "playwright test test-e2e/spec",
-    "lint": "eslint -c .eslintrc.json lib",
+    "lint": "eslint -c .eslintrc.js lib",
     "release": "standard-version && git push --follow-tags origin && npm publish",
     "release-minor": "standard-version --release-as minor && git push --follow-tags origin && npm publish",
     "paddle-webhook-tunnel": "lt --port 3456 --subdomain xxrrii533vj7h9qipggbkbze"
@@ -38,7 +38,7 @@
     "@discue/open-telemetry-tracing": "^0.10.0",
     "@playwright/test": "^1.42.1",
     "chai": "^4.4.1",
-    "eslint": "^8.57.0",
+    "eslint": "^9.0.0",
     "express": "^4.19.2",
     "localtunnel": "^2.0.2",
     "mocha": "^10.4.0",
