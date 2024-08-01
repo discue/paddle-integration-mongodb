@@ -35,7 +35,7 @@
     "mongodb"
   ],
   "devDependencies": {
-    "@discue/open-telemetry-tracing": "^0.10.0",
+    "@discue/open-telemetry-tracing": "^1.0.0",
     "@playwright/test": "^1.44.1",
     "chai": "^4.4.1",
     "eslint": "^9.6.0",
