@@ -41,7 +41,7 @@
     "eslint": "^9.6.0",
     "express": "^4.19.2",
     "localtunnel": "^2.0.2",
-    "mocha": "^10.5.2",
+    "mocha": "^10.7.0",
     "mongodb-memory-server": "^9.2.0",
     "node-amy": "^3.7.0",
     "nodemon": "^3.1.2",
