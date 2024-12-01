@@ -45,7 +45,7 @@
     "mongodb-memory-server": "^10.1.2",
     "node-amy": "^3.7.0",
     "nodemon": "^3.1.7",
-    "puppeteer": "^23.6.1",
+    "puppeteer": "^23.9.0",
     "standard-version": "^9.5.0"
   },
   "dependencies": {
