@@ -1,19 +1,20 @@
 // playwright.config.js
 // @ts-check
-const { devices } = require('@playwright/test')
+const { defineConfig, devices } = require('@playwright/test')
 const headless = true
 
 /** @type {import('@playwright/test').PlaywrightTestConfig} */
-const config = {
+const config = defineConfig({
     testDir: 'test-e2e/spec',
     testMatch: '*.spec.js',
+    slowMo: 50,
     reportSlowTests: null,
     workers: 1,
     timeout: 1000 * 60 * 1,
     fullyParallel: false,
     forbidOnly: !!process.env.CI,
-    globalSetup: require.resolve('./test-e2e/before-all.js'),
-    globalTeardown: require.resolve('./test-e2e/after-all.js'),
+    // globalSetup: require.resolve('./test-e2e/before-all.js'),
+    // globalTeardown: require.resolve('./test-e2e/after-all.js'),
     use: {
         // trace: 'on-first-retry',
         screenshot: 'only-on-failure',
@@ -25,6 +26,6 @@ const config = {
             use: { ...devices['Desktop Chrome'], headless },
         }
     ],
-}
+})
 
-module.exports = config
+export default config

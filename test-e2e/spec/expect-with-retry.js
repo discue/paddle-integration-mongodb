@@ -1,4 +1,4 @@
-module.exports = async (callback, { maxRetries = 10, delay = 250, backOff = 2 } = {}) => {
+export default async (callback, { maxRetries = 10, delay = 250, backOff = 2 } = {}) => {
     for (let i = 1; i <= maxRetries; i++) {
         try {
             await callback()

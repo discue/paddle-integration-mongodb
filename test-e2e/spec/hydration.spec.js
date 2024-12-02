@@ -1,11 +1,17 @@
 'use strict'
 
-const { randomUUID } = require('crypto')
-const { test, expect } = require('@playwright/test')
+import { expect, test } from '@playwright/test'
+import { randomUUID } from 'crypto'
+import { Api, SubscriptionHooks, SubscriptionHydration, SubscriptionInfo, subscriptionStorage } from '../../lib/index.js'
+import mongodbClient from '../../test/spec/mongodb-client.js'
+import hookRunner from '../hook-server-runner.js'
+import hookTunnelRunner from '../hook-tunnel-runner.js'
+import mongoDbRunner from '../mongodb-runner.js'
+import testPageRunner from '../test-page-runner.js'
 
-const index = require('../../lib/index')
-const storage = index.subscriptionStorage({ url: 'mongodb://127.0.0.1:27017' })
-const subscriptions = new index.SubscriptionHooks({ storage })
+const client = mongodbClient(27017)
+const storage = subscriptionStorage({ client })
+const subscriptions = new SubscriptionHooks({ storage })
 
 let subscriptionInfo
 let subscriptionHydration
@@ -16,11 +22,16 @@ let apiClientId
 let api
 
 test.beforeAll(async () => {
-    api = new index.Api({ logRequests: true, useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
-    await api.init()
+    await testPageRunner.start()
+    await hookTunnelRunner.start()
+    await hookRunner.start()
+    await mongoDbRunner.start()
+})
 
-    subscriptionInfo = new index.SubscriptionInfo({ api, storage })
-    subscriptionHydration = new index.SubscriptionHydration({ api, hookStorage: subscriptions, subscriptionInfo })
+test.beforeAll(async () => {
+    api = new Api({ logRequests: true, useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
+    subscriptionInfo = new SubscriptionInfo({ api, storage })
+    subscriptionHydration = new SubscriptionHydration({ api, hookStorage: subscriptions, subscriptionInfo })
 })
 
 test.beforeEach(async () => {
@@ -37,6 +48,14 @@ test.afterAll(async () => {
     }
 
     return storage.close()
+})
+
+test.afterAll(async () => {
+    await testPageRunner.stop()
+    await hookTunnelRunner.stop()
+    await hookRunner.stop()
+    await client.close()
+    await mongoDbRunner.stop()
 })
 
 async function createNewSubscription(page, apiClientId) {
@@ -122,8 +141,8 @@ test('hydrates the initial payment too', async ({ page }) => {
     const payments = subscription.payments
     const payment = payments.at(0)
 
-    expect(payment.alert_id).toEqual(index.SubscriptionHydration.HYDRATION_SUBSCRIPTION_CREATED)
-    expect(payment.alert_name).toEqual(index.SubscriptionHydration.HYDRATION_SUBSCRIPTION_CREATED)
+    expect(payment.alert_id).toEqual(SubscriptionHydration.HYDRATION_SUBSCRIPTION_CREATED)
+    expect(payment.alert_name).toEqual(SubscriptionHydration.HYDRATION_SUBSCRIPTION_CREATED)
     expect(payment.checkout_id).toEqual('checkoutId')
     expect(payment.currency).toEqual(result.order.currency)
     expect(payment.email).toEqual(result.order.customer.email)
@@ -219,7 +238,7 @@ test('provides enough data for a hydrated payment to look like a real one', asyn
 
     const payment = paymentsTrail.at(0)
 
-    expect(payment.description).toEqual(index.SubscriptionHydration.HYDRATION_SUBSCRIPTION_CREATED)
+    expect(payment.description).toEqual(SubscriptionHydration.HYDRATION_SUBSCRIPTION_CREATED)
     expect(payment.checkout_id).toBeUndefined()
     expect(payment.amount.currency).toEqual(result.order.currency)
     expect(payment.amount.total).toEqual(result.order.total)
@@ -273,7 +292,7 @@ test('throws if subscription was created for another client', async ({ page }) =
         throw new Error('Must throw')
     } catch (e) {
         const message = e.message
-        expect(message).toEqual(index.SubscriptionInfo.HYDRATION_UNAUTHORIZED)
+        expect(message).toEqual(SubscriptionInfo.HYDRATION_UNAUTHORIZED)
     }
 })
 
@@ -307,7 +326,7 @@ test('hydrate a deleted subscription', async ({ page }) => {
         await api.cancelSubscription(order)
         await new Promise((resolve) => setTimeout(resolve, 10000))
     } catch (e) {
-        if (e.message !== index.SubscriptionInfo.ERROR_SUBSCRIPTION_ALREADY_CANCELLED) {
+        if (e.message !== SubscriptionInfo.ERROR_SUBSCRIPTION_ALREADY_CANCELLED) {
             throw e
         }
     }
@@ -327,8 +346,8 @@ test('hydrate a deleted subscription', async ({ page }) => {
 
     const status = subscriptionStatus.at(-1)
 
-    expect(status.alert_id).toEqual(index.SubscriptionInfo.HYDRATION_SUBSCRIPTION_CANCELLED)
-    expect(status.alert_name).toEqual(index.SubscriptionInfo.HYDRATION_SUBSCRIPTION_CANCELLED)
+    expect(status.alert_id).toEqual(SubscriptionInfo.HYDRATION_SUBSCRIPTION_CANCELLED)
+    expect(status.alert_name).toEqual(SubscriptionInfo.HYDRATION_SUBSCRIPTION_CANCELLED)
     expect(status.currency).toEqual(subscriptionFromApi.last_payment.currency)
     expect(status.description).toEqual('deleted')
     expect(status.next_bill_date).toBeUndefined()

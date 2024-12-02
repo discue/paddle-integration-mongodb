@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     alert_id: '2014203184',
     alert_name: 'subscription_created',
     cancel_url: 'https://sandbox-my.paddle.com/subscription/cancel?user=9&subscription=5&hash=13f3e703caa74b5dd758faf3a24b415fd32e245d',

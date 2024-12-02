@@ -1,17 +1,19 @@
-'use strict'
+import express from 'express'
+import bodyParser from '../lib/body-parser.js'
+import { middleware as Middleware, SubscriptionHooks, subscriptionStorage } from '../lib/index.js'
+import mongodbClient from '../test/spec/mongodb-client.js'
 
-const express = require('express')
 const app = express()
 
-const { SubscriptionHooks, middleware: Middleware, subscriptionStorage } = require('../lib/index')
-const storage = subscriptionStorage({ url: 'mongodb://127.0.0.1:27017' })
+const client = mongodbClient(27017)
+const storage = subscriptionStorage({ client })
 const subscriptions = new SubscriptionHooks({ storage })
 
 const middleware = Middleware(subscriptions)
 
 const port = process.env.PORT || 3456
 
-app.use(require('../lib/body-parser')())
+app.use(bodyParser())
 app.use((req, _, next) => {
     console.log('Request', req.method, req.path, req.body.alert_name)
     console.log()
@@ -37,4 +39,10 @@ const server = app.listen(port, () => {
     console.log('Payment hook server running on port', port)
 })
 
-module.exports = server
+process.on('SIGTERM', () => {
+    server.close((err) => {
+        process.exit(err ? 1 : 0)
+    })
+})
+
+export default server
