@@ -1,4 +1,4 @@
-module.exports =  {
+export default {
     alert_id: '46382912',
     alert_name: 'subscription_payment_failed',
     amount: '808.38',

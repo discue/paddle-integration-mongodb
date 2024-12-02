@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     alert_id: '746440922',
     alert_name: 'subscription_payment_succeeded',
     balance_currency: 'USD',

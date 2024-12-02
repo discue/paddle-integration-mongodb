@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     alert_id: '439273720',
     alert_name: 'subscription_cancelled',
     cancellation_effective_date: '2021-09-04',

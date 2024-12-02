@@ -5,6 +5,7 @@
   "version": "0.26.0",
   "description": "Paddle payments integration mongodb database",
   "main": "lib/index",
+  "type": "module",
   "files": [
     "lib"
   ],
@@ -15,7 +16,7 @@
   },
   "scripts": {
     "test": "mocha test/spec/**/*.spec.js --check-leaks  --timeout 50000 --file test/global-mocha-setup.js",
-    "test-e2e": "playwright test test-e2e/spec",
+    "test-e2e": "playwright test --config playwright.config.cjs test-e2e/spec",
     "lint": "eslint -c .eslintrc.js lib",
     "release": "standard-version && git push --follow-tags origin && npm publish",
     "release-minor": "standard-version --release-as minor && git push --follow-tags origin && npm publish",

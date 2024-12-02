@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     alert_id: '84168067',
     alert_name: 'subscription_updated',
     cancel_url: 'https://sandbox-checkout.paddle.com/subscription/cancel?user=1&subscription=8&hash=fd4091c9cca96a1ef5b0a9e2248d9821bbeb7157',

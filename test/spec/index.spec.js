@@ -1,21 +1,22 @@
 'use strict'
 
-const uuid = require('crypto').randomUUID
+import { expect } from 'chai'
+import { randomUUID as uuid } from 'node:crypto'
+import customData from '../../lib/client/custom-data.js'
+import { htmlEncoder, SubscriptionHooks, SubscriptionInfo, subscriptionStorage } from '../../lib/index.js'
+import { default as paymentFailed } from '../fixtures/payment-failed.js'
+import { default as paymentRefunded } from '../fixtures/payment-refunded.js'
+import { default as paymentSucceded } from '../fixtures/payment-succeeded.js'
+import { default as subscriptionCancelled } from '../fixtures/subscription-cancelled.js'
+import { default as subscriptionCreated } from '../fixtures/subscription-created.js'
+import { default as subscriptionUpdated } from '../fixtures/subscription-updated.js'
+import mongodbClient from './mongodb-client.js'
 
-const subscriptionCreated = require('../fixtures/subscription-created')
-const subscriptionCancelled = require('../fixtures/subscription-cancelled')
-const subscriptionUpdated = require('../fixtures/subscription-updated')
-const paymentSucceded = require('../fixtures/payment-succeeded')
-const paymentFailed = require('../fixtures/payment-failed')
-const paymentRefunded = require('../fixtures/payment-refunded')
+const client = mongodbClient()
 
-const { SubscriptionHooks, htmlEncoder, SubscriptionInfo, subscriptionStorage } = require('../../lib/index')
-const storage = subscriptionStorage({ url: 'mongodb://127.0.0.1:27017' })
+const storage = subscriptionStorage({ client })
 const paddleIntegration = new SubscriptionHooks({ storage })
 const subscriptionInfo = new SubscriptionInfo({ hookStorage: paddleIntegration })
-
-const { expect } = require('chai')
-const { customData } = require('../../lib/client')
 
 describe('PaddleIntegration', () => {
 
@@ -28,6 +29,10 @@ describe('PaddleIntegration', () => {
 
     after(() => {
         return storage.close()
+    })
+
+    after(() => {
+        return client.close()
     })
 
     describe('.addSubscription', () => {

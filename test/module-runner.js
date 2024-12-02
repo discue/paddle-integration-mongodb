@@ -1,9 +1,9 @@
-const { spawn } = require('child_process')
-const { platform } = require('os')
+import { spawn } from 'child_process'
+import { platform } from 'os'
 
 const isUnix = platform().includes('win') ? false : true
 
-module.exports = class Runner {
+export default class Runner {
     start(binary, args, cwd, waitFor, logOutput = true) {
         this._binary = binary
         this._args = args

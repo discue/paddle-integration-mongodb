@@ -1,24 +1,24 @@
 'use strict'
 
-const uuid = require('crypto').randomUUID
+import { expect } from 'chai'
+import { randomUUID as uuid } from 'node:crypto'
+import { customData } from '../../lib/client/index.js'
+import encode from '../../lib/html-encoder.js'
+import { SubscriptionHooks, SubscriptionInfo, subscriptionStorage } from '../../lib/index.js'
+import { UPCOMING_PAYMENTS_DESCRIPTION } from '../../lib/subscription-descriptions.js'
+import { default as paymentFailed } from '../fixtures/payment-failed.js'
+import { default as paymentRefunded } from '../fixtures/payment-refunded.js'
+import { default as paymentSucceded } from '../fixtures/payment-succeeded.js'
+import { default as subscriptionCancelled } from '../fixtures/subscription-cancelled.js'
+import { default as subscriptionCreated } from '../fixtures/subscription-created.js'
+import { default as subscriptionUpdated } from '../fixtures/subscription-updated.js'
+import mongodbClient from './mongodb-client.js'
 
-const subscriptionCreated = require('../fixtures/subscription-created')
-const subscriptionCancelled = require('../fixtures/subscription-cancelled')
-const subscriptionUpdated = require('../fixtures/subscription-updated')
-const paymentSucceded = require('../fixtures/payment-succeeded')
-const paymentFailed = require('../fixtures/payment-failed')
-const paymentRefunded = require('../fixtures/payment-refunded')
+const client = mongodbClient()
 
-const { SubscriptionHooks, SubscriptionInfo, subscriptionStorage } = require('../../lib/index')
-const storage = subscriptionStorage({ url: 'mongodb://127.0.0.1:27017' })
+const storage = subscriptionStorage({ client })
 const subscriptions = new SubscriptionHooks({ storage })
 const subscriptionInfo = new SubscriptionInfo({ storage })
-
-const { customData } = require('../../lib/client/index')
-const encode = require('../../lib/html-encoder.js')
-
-const { expect } = require('chai')
-const { UPCOMING_PAYMENTS_DESCRIPTION } = require('../../lib/subscription-descriptions')
 
 describe('SubscriptionInfo', () => {
 
@@ -31,6 +31,10 @@ describe('SubscriptionInfo', () => {
 
     after(() => {
         return storage.close()
+    })
+
+    after(() => {
+        return client.close()
     })
 
     describe('.getSubscriptionInfo', () => {
@@ -557,7 +561,6 @@ describe('SubscriptionInfo', () => {
             })
             await subscriptions.addRefundedPayment(paymentRefundedPayload1)
 
-
             const paymentRefundedPayload2 = Object.assign({}, paymentRefunded, {
                 event_time: '2014-08-08 10:47:47',
                 subscription_id: ids.at(0),
@@ -652,35 +655,43 @@ describe('SubscriptionInfo', () => {
             expect(paymentsForSubscription[0].subscription_plan_id).to.equal(paymentSucceded.subscription_plan_id)
         })
 
-        it('returns a sorted listed of payments per subscription plan id 4 and ignores refunded payment hook', async () => {
+        it('returns a sorted listed of payments per subscription plan id 4 and including payments hook', async () => {
             const sub = await storage.get(ids, true)
             const trail = await subscriptionInfo.getPaymentsTrail(sub)
 
             expect(trail).to.have.keys(paymentSucceded.subscription_plan_id, '4')
 
             const paymentsForSubscription = trail['4']
-            expect(paymentsForSubscription).to.have.length(3)
+            expect(paymentsForSubscription).to.have.length(4)
 
-            expect(paymentsForSubscription[2].description).to.equal('subscription_payment_succeeded')
-            expect(paymentsForSubscription[2].amount.currency).to.equal(paymentSucceded.currency)
-            expect(paymentsForSubscription[2].amount.total).to.equal(paymentSucceded.sale_gross)
-            expect(paymentsForSubscription[2].amount.quantity).to.equal(paymentSucceded.quantity)
-            expect(paymentsForSubscription[2].amount.unit_price).to.equal(paymentSucceded.unit_price)
-            expect(paymentsForSubscription[2].amount.method).to.equal(paymentSucceded.payment_method)
-            expect(paymentsForSubscription[2].next_payment.date).to.equal(paymentSucceded.next_bill_date)
-            expect(paymentsForSubscription[2].next_payment.amount.currency).to.equal(paymentSucceded.currency)
-            expect(paymentsForSubscription[2].next_payment.amount.total).to.equal(paymentSucceded.next_payment_amount)
-            expect(paymentsForSubscription[2].receipt_url).to.equal(paymentSucceded.receipt_url)
-            expect(paymentsForSubscription[2].instalments).to.equal(paymentSucceded.instalments)
+            expect(paymentsForSubscription[3].description).to.equal('subscription_payment_succeeded')
+            expect(paymentsForSubscription[3].amount.currency).to.equal(paymentSucceded.currency)
+            expect(paymentsForSubscription[3].amount.total).to.equal(paymentSucceded.sale_gross)
+            expect(paymentsForSubscription[3].amount.quantity).to.equal(paymentSucceded.quantity)
+            expect(paymentsForSubscription[3].amount.unit_price).to.equal(paymentSucceded.unit_price)
+            expect(paymentsForSubscription[3].amount.method).to.equal(paymentSucceded.payment_method)
+            expect(paymentsForSubscription[3].next_payment.date).to.equal(paymentSucceded.next_bill_date)
+            expect(paymentsForSubscription[3].next_payment.amount.currency).to.equal(paymentSucceded.currency)
+            expect(paymentsForSubscription[3].next_payment.amount.total).to.equal(paymentSucceded.next_payment_amount)
+            expect(paymentsForSubscription[3].receipt_url).to.equal(paymentSucceded.receipt_url)
+            expect(paymentsForSubscription[3].instalments).to.equal(paymentSucceded.instalments)
+            expect(paymentsForSubscription[3].subscription_plan_id).to.equal('4')
+
+            expect(paymentsForSubscription[2].description).to.equal('subscription_payment_failed')
+            expect(paymentsForSubscription[2].amount.currency).to.equal(paymentFailed.currency)
+            expect(paymentsForSubscription[2].amount.total).to.equal(paymentFailed.amount)
+            expect(paymentsForSubscription[2].amount.quantity).to.equal(paymentFailed.quantity)
+            expect(paymentsForSubscription[2].amount.unit_price).to.equal(paymentFailed.unit_price)
+            expect(paymentsForSubscription[2].next_try.date).to.equal(paymentFailed.next_retry_date)
+            expect(paymentsForSubscription[2].instalments).to.equal(paymentFailed.instalments)
             expect(paymentsForSubscription[2].subscription_plan_id).to.equal('4')
 
-            expect(paymentsForSubscription[1].description).to.equal('subscription_payment_failed')
-            expect(paymentsForSubscription[1].amount.currency).to.equal(paymentFailed.currency)
-            expect(paymentsForSubscription[1].amount.total).to.equal(paymentFailed.amount)
-            expect(paymentsForSubscription[1].amount.quantity).to.equal(paymentFailed.quantity)
-            expect(paymentsForSubscription[1].amount.unit_price).to.equal(paymentFailed.unit_price)
-            expect(paymentsForSubscription[1].next_try.date).to.equal(paymentFailed.next_retry_date)
-            expect(paymentsForSubscription[1].instalments).to.equal(paymentFailed.instalments)
+            expect(paymentsForSubscription[1].description).to.equal('subscription_payment_refunded')
+            expect(paymentsForSubscription[1].amount.currency).to.equal(paymentRefunded.currency)
+            expect(paymentsForSubscription[1].amount.total).to.equal(paymentRefunded.gross_refund)
+            expect(paymentsForSubscription[1].amount.quantity).to.equal(paymentRefunded.quantity)
+            expect(paymentsForSubscription[1].amount.unit_price).to.equal(paymentRefunded.unit_price)
+            expect(paymentsForSubscription[1].instalments).to.equal(paymentRefunded.instalments)
             expect(paymentsForSubscription[1].subscription_plan_id).to.equal('4')
 
             expect(paymentsForSubscription[0].description).to.equal('pi/upcoming_payment')
