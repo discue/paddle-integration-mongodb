@@ -11,9 +11,6 @@ before(async function () {
         }],
         replSet: {
             count: 1
-        },
-        binary: {
-            version: '6.0.0'
         }
     })
 })
