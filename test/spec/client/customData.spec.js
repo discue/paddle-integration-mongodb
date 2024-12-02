@@ -1,7 +1,5 @@
-'use strict'
-
-const { expect } = require('chai')
-const customData = require('../../../lib/client/custom-data')
+import { expect } from 'chai'
+import customData from '../../../lib/client/custom-data.js'
 
 describe('CustomData', () => {
     it('creates a valid customData object', () => {

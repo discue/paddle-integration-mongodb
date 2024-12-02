@@ -1,9 +1,9 @@
 'use strict'
 
-const paddleIntegration = require('./lib/index.js')
+import { Api } from './lib/index.js'
 
 async function run() {
-    const api = new paddleIntegration.Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
+    const api = new Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
     await api.init()
 
     const subscriptions = await api.listSubscriptions()

@@ -1,15 +1,15 @@
 'use strict'
 
-const express = require('express')
+import express from 'express'
+import amy from 'node-amy'
 const app = express()
 
 // eslint-disable-next-line no-undef
 const port = process.env.PORT || 3333
 
-const { Compiler } = require('node-amy')
-const templateCompiler = new Compiler('test-e2e/test-page', true, {
+const templateCompiler = new amy.Compiler('test-e2e/test-page', true, {
     reader: {
-        registry: { 
+        registry: {
             enabled: true,
             componentFilePattern: 'fragments/**/*{component.js,.html}'
         }
@@ -50,6 +50,14 @@ app.get('**/**.html', async (req, res) => {
     res.status(200).send(html)
 })
 
-app.listen(port, () => {
+let server
+
+process.on('SIGTERM', () => {
+    server.close((err) => {
+        process.exit(err ? 1 : 0)
+    })
+})
+
+server = app.listen(port, () => {
     console.log('Payments test-ui started on', port)
 })

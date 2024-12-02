@@ -1,8 +1,8 @@
 'use strict'
 
-const Middleware = require('../../lib/middleware.js')
-const events = require('../../lib/event-emitter.js')
-const { expect } = require('chai')
+import { expect } from 'chai'
+import events from '../../lib/event-emitter.js'
+import Middleware from '../../lib/middleware.js'
 
 const DUMMY_REQUEST = (alert) => {
     return {

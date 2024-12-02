@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     alert_id: '1535227955',
     alert_name: 'subscription_payment_refunded',
     amount: '979.86',

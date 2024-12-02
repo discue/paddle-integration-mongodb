@@ -1,11 +1,14 @@
 'use strict'
 
-const { randomUUID } = require('crypto')
-const { test, expect } = require('@playwright/test')
+import { expect, test } from '@playwright/test'
+import { randomUUID } from 'crypto'
+import { Api, SubscriptionHooks, SubscriptionHydration, SubscriptionInfo, subscriptionStorage } from '../../lib/index.js'
+import mongodbClient from '../../test/spec/mongodb-client.js'
+import catchAndRetry from './catch-and-retry.js'
 
-const index = require('../../lib/index')
-const storage = index.subscriptionStorage({ url: 'mongodb://127.0.0.1:27017' })
-const subscriptions = new index.SubscriptionHooks({ storage })
+const client = mongodbClient(27017)
+const storage = subscriptionStorage({ client })
+const subscriptions = new SubscriptionHooks({ storage })
 
 let subscriptionInfo
 let subscriptionHydration
@@ -16,27 +19,21 @@ let apiClientId
 let api
 
 test.beforeAll(async () => {
-    api = new index.Api({ logRequests: true, useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
-    await api.init()
+    await testPageRunner.start()
+    await hookTunnelRunner.start()
+    await hookRunner.start()
+    await mongoDbRunner.start()
+})
 
-    subscriptionInfo = new index.SubscriptionInfo({ api, storage })
-    subscriptionHydration = new index.SubscriptionHydration({ api, hookStorage: subscriptions, subscriptionInfo })
+test.beforeAll(async () => {
+    api = new Api({ logRequests: true, useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
+    subscriptionInfo = new SubscriptionInfo({ api, storage })
+    subscriptionHydration = new SubscriptionHydration({ api, hookStorage: subscriptions, subscriptionInfo })
 })
 
 test.beforeEach(async () => {
     apiClientId = randomUUID()
-    console.log('Creating placeholder for', apiClientId)
     await subscriptions.addSubscriptionPlaceholder([apiClientId])
-})
-
-test.afterAll(async () => {
-    const subscriptions = await api.listSubscriptions()
-    for (let i = 0; i < subscriptions.length; i++) {
-        const subscription = subscriptions[i]
-        await api.cancelSubscription(subscription)
-    }
-
-    return storage.close()
 })
 
 async function createNewSubscription(page, apiClientId) {
@@ -109,9 +106,11 @@ test('hydrates the initial payment too', async ({ page }) => {
     })
 
     subscription = await storage.get([apiClientId])
-    // .. expect sub to be not active anymore after we reset all status and payments
-    let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['52450']).toBeFalsy()
+    await catchAndRetry(async () => {
+        // .. expect sub to be not active anymore after we reset all status and payments
+        let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
+        expect(sub['52450']).toBeFalsy()
+    })
 
     // .. now hydrate status again ..
     await subscriptionHydration.hydrateSubscriptionCreated([apiClientId], { subscription_id: subscriptionId }, 'checkoutId')
@@ -122,8 +121,8 @@ test('hydrates the initial payment too', async ({ page }) => {
     const payments = subscription.payments
     const payment = payments.at(0)
 
-    expect(payment.alert_id).toEqual(index.SubscriptionHydration.HYDRATION_SUBSCRIPTION_CREATED)
-    expect(payment.alert_name).toEqual(index.SubscriptionHydration.HYDRATION_SUBSCRIPTION_CREATED)
+    expect(payment.alert_id).toEqual(SubscriptionHydration.HYDRATION_SUBSCRIPTION_CREATED)
+    expect(payment.alert_name).toEqual(SubscriptionHydration.HYDRATION_SUBSCRIPTION_CREATED)
     expect(payment.checkout_id).toEqual('checkoutId')
     expect(payment.currency).toEqual(result.order.currency)
     expect(payment.email).toEqual(result.order.customer.email)
@@ -170,10 +169,13 @@ test('provides enough data for a hydrated status to look like a real one', async
         }
     })
 
-    subscription = await storage.get([apiClientId])
-    // .. expect sub to be not active anymore after we reset all status and payments
-    let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['52450']).toBeFalsy()
+    await catchAndRetry(async () => {
+        subscription = await storage.get([apiClientId])
+        // .. expect sub to be not active anymore after we reset all status and payments
+        let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
+        expect(sub['52450']).toBeFalsy()
+
+    })
 
     // .. now hydrate status again ..
     await subscriptionHydration.hydrateSubscriptionCreated([apiClientId], { subscription_id: subscriptionId }, 'checkoutId')
@@ -211,7 +213,14 @@ test('provides enough data for a hydrated payment to look like a real one', asyn
     // .. now hydrate status again ..
     await subscriptionHydration.hydrateSubscriptionCreated([apiClientId], { subscription_id: subscriptionId }, 'checkoutId')
 
-    // .. and expect subscription to be active again
+    await catchAndRetry(async () => {
+        // .. and expect subscription to be active again
+        const subInfo = await subscriptionInfo.getSubscriptionInfo([apiClientId])
+        const { payments_trail: paymentsTrail } = subInfo['52450']
+
+        expect(paymentsTrail).toHaveLength(1)
+    })
+
     const subInfo = await subscriptionInfo.getSubscriptionInfo([apiClientId])
     const { payments_trail: paymentsTrail } = subInfo['52450']
 
@@ -219,7 +228,7 @@ test('provides enough data for a hydrated payment to look like a real one', asyn
 
     const payment = paymentsTrail.at(0)
 
-    expect(payment.description).toEqual(index.SubscriptionHydration.HYDRATION_SUBSCRIPTION_CREATED)
+    expect(payment.description).toEqual(SubscriptionHydration.HYDRATION_SUBSCRIPTION_CREATED)
     expect(payment.checkout_id).toBeUndefined()
     expect(payment.amount.currency).toEqual(result.order.currency)
     expect(payment.amount.total).toEqual(result.order.total)
@@ -257,10 +266,12 @@ test('throws if subscription was created for another client', async ({ page }) =
         }
     })
 
-    subscription = await storage.get([apiClientId])
-    // .. expect sub to be not active anymore after we reset all status and payments
-    let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['52450']).toBeFalsy()
+    await catchAndRetry(async () => {
+        subscription = await storage.get([apiClientId])
+        // .. expect sub to be not active anymore after we reset all status and payments
+        let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
+        expect(sub['52450']).toBeFalsy()
+    })
 
     try {
         // add dummy client here
@@ -273,7 +284,7 @@ test('throws if subscription was created for another client', async ({ page }) =
         throw new Error('Must throw')
     } catch (e) {
         const message = e.message
-        expect(message).toEqual(index.SubscriptionInfo.HYDRATION_UNAUTHORIZED)
+        expect(message).toEqual(SubscriptionInfo.HYDRATION_UNAUTHORIZED)
     }
 })
 
@@ -284,16 +295,20 @@ test('does not hydrate if status created was already received', async ({ page })
     let subscription = await storage.get([apiClientId])
     const subscriptionId = subscription.status[0].subscription_id
 
-    // .. and check subscription is active to make sure setup was correct
-    let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
-    expect(sub['52450']).toBeTruthy()
+    await catchAndRetry(async () => {
+        // .. and check subscription is active to make sure setup was correct
+        let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
+        expect(sub['52450']).toBeTruthy()
+    })
 
     // .. now hydrate status again ..
     await subscriptionHydration.hydrateSubscriptionCreated([apiClientId], { subscription_id: subscriptionId }, 'checkoutId')
 
-    // .. and expect subscription to be active again
-    subscription = await storage.get([apiClientId])
-    expect(subscription.status).toHaveLength(1)
+    await catchAndRetry(async () => {
+        // .. and expect subscription to be active again
+        subscription = await storage.get([apiClientId])
+        expect(subscription.status).toHaveLength(1)
+    })
 })
 
 test('hydrate a deleted subscription', async ({ page }) => {
@@ -307,13 +322,20 @@ test('hydrate a deleted subscription', async ({ page }) => {
         await api.cancelSubscription(order)
         await new Promise((resolve) => setTimeout(resolve, 10000))
     } catch (e) {
-        if (e.message !== index.SubscriptionInfo.ERROR_SUBSCRIPTION_ALREADY_CANCELLED) {
+        if (e.message !== SubscriptionInfo.ERROR_SUBSCRIPTION_ALREADY_CANCELLED) {
             throw e
         }
     }
 
     // .. now hydrate status again ..
     await subscriptionHydration.hydrateSubscriptionCancelled([apiClientId], '52450')
+
+
+    await catchAndRetry(async () => {
+        subscription = await storage.get([apiClientId])
+        const sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription, new Date(new Date().getTime() + 1000 * 3600 * 24 * 35))
+        expect(sub['52450']).toBeFalsy()
+    })
 
     subscription = await storage.get([apiClientId])
     let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription, new Date(new Date().getTime() + 1000 * 3600 * 24 * 35))
@@ -327,8 +349,8 @@ test('hydrate a deleted subscription', async ({ page }) => {
 
     const status = subscriptionStatus.at(-1)
 
-    expect(status.alert_id).toEqual(index.SubscriptionInfo.HYDRATION_SUBSCRIPTION_CANCELLED)
-    expect(status.alert_name).toEqual(index.SubscriptionInfo.HYDRATION_SUBSCRIPTION_CANCELLED)
+    expect(status.alert_id).toEqual(SubscriptionInfo.HYDRATION_SUBSCRIPTION_CANCELLED)
+    expect(status.alert_name).toEqual(SubscriptionInfo.HYDRATION_SUBSCRIPTION_CANCELLED)
     expect(status.currency).toEqual(subscriptionFromApi.last_payment.currency)
     expect(status.description).toEqual('deleted')
     expect(status.next_bill_date).toBeUndefined()

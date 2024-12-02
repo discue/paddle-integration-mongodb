@@ -1,8 +1,5 @@
-'use strict'
-
-const encode = require('../../lib/html-encoder')
-
-const { expect } = require('chai')
+import { expect } from 'chai'
+import encode from '../../lib/html-encoder.js'
 
 describe('HtmlEncoder', () => {
     it('encodes recursively', () => {
