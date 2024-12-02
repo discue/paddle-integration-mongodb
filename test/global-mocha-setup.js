@@ -6,7 +6,6 @@ before(async function () {
     // This will create an new instance of 'MongoMemoryServer' and automatically start it
     mongod = await MongoMemoryReplSet.create({
         instanceOpts: [{
-            args: ['--setParameter', 'notablescan=1'],
             port: 27021
         }],
         replSet: {
