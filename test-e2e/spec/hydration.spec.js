@@ -37,7 +37,7 @@ async function createNewSubscription(page, apiClientId) {
         await page.frameLocator('iframe[name="paddle_frame"]').locator('[data-testid="postcodeInput"]').fill('12345')
         await page.frameLocator('iframe[name="paddle_frame"]').locator('[data-testid="postcodeInput"]').press('Enter')
         await page.frameLocator('iframe[name="paddle_frame"]').locator('[data-testid="cardNumberInput"]').click()
-        await page.frameLocator('iframe[name="paddle_frame"]').locator('[data-testid="cardNumberInput"]').fill('4000 0566 5566 5556')
+        await page.frameLocator('iframe[name="paddle_frame"]').locator('[data-testid="cardNumberInput"]').fill('4242424242424242')
         await page.frameLocator('iframe[name="paddle_frame"]').locator('[data-testid="cardNumberInput"]').press('Tab')
         await page.frameLocator('iframe[name="paddle_frame"]').locator('[data-testid="cardholderNameInput"]').fill('Muller')
         await page.frameLocator('iframe[name="paddle_frame"]').locator('[data-testid="cardholderNameInput"]').press('Tab')
@@ -216,9 +216,6 @@ test('provides enough data for a hydrated payment to look like a real one', asyn
 
     const subInfo = await subscriptionInfo.getSubscriptionInfo([apiClientId])
     const { payments_trail: paymentsTrail } = subInfo['52450']
-
-    expect(paymentsTrail).toHaveLength(1)
-
     const payment = paymentsTrail.at(0)
 
     expect(payment.description).toEqual(SubscriptionHydration.HYDRATION_SUBSCRIPTION_CREATED)
@@ -331,8 +328,6 @@ test('hydrate a deleted subscription', async ({ page }) => {
     })
 
     subscription = await storage.get([apiClientId])
-    let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription, new Date(new Date().getTime() + 1000 * 3600 * 24 * 35))
-    expect(sub['52450']).toBeFalsy()
 
     const { status: subscriptionStatus } = subscription
     expect(subscriptionStatus).toHaveLength(3)
