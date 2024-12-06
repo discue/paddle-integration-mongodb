@@ -16,13 +16,6 @@ let apiClientId = '4815162342'
 let api
 
 test.beforeAll(async () => {
-    await testPageRunner.start()
-    await hookTunnelRunner.start()
-    await hookRunner.start()
-    await mongoDbRunner.start()
-})
-
-test.beforeAll(async () => {
     api = new Api({ useSandbox: true, authCode: process.env.AUTH_CODE, vendorId: process.env.VENDOR_ID })
     subscriptionInfo = new SubscriptionInfo({ api, storage })
 })
