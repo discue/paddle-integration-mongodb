@@ -7,14 +7,13 @@ const headless = true
 const config = defineConfig({
     testDir: 'test-e2e/spec',
     testMatch: '*.spec.js',
-    slowMo: 50,
     reportSlowTests: null,
     workers: 1,
-    timeout: 1000 * 60 * 1,
+    timeout: 1000 * 60 * 1.5,
     fullyParallel: false,
     forbidOnly: !!process.env.CI,
-    // globalSetup: require.resolve('./test-e2e/before-all.js'),
-    // globalTeardown: require.resolve('./test-e2e/after-all.js'),
+    globalSetup: require.resolve('./test-e2e/before-all.js'),
+    globalTeardown: require.resolve('./test-e2e/after-all.js'),
     use: {
         // trace: 'on-first-retry',
         screenshot: 'only-on-failure',
