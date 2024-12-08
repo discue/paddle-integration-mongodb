@@ -15,7 +15,7 @@
     "./server": "./lib/index.js"
   },
   "scripts": {
-    "test": "mocha test/spec/**/*.spec.js --check-leaks  --timeout 50000 --file test/global-mocha-setup.js",
+    "test": "mocha test/spec/**.spec.js --check-leaks  --timeout 50000 --file test/global-mocha-setup.js",
     "test-e2e": "playwright test --config playwright.config.cjs test-e2e/spec",
     "lint": "eslint -c .eslintrc.js lib",
     "push-incl-tags": "git push --follow-tags origin main",
