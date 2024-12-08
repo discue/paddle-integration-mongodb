@@ -18,8 +18,12 @@
     "test": "mocha test/spec/**/*.spec.js --check-leaks  --timeout 50000 --file test/global-mocha-setup.js",
     "test-e2e": "playwright test --config playwright.config.cjs test-e2e/spec",
     "lint": "eslint -c .eslintrc.js lib",
-    "release": "standard-version && git push --follow-tags origin && npm publish",
-    "release-minor": "standard-version --release-as minor && git push --follow-tags origin && npm publish",
+    "remove-types": "find lib -name \"*.d.ts\" -type f -delete",
+    "create-types": "npx tsc lib/index.js --declaration --emitDeclarationOnly --allowJs && npx tsc lib/types.js --declaration --emitDeclarationOnly --allowJs || true",
+    "release-generic": "npm run push-incl-tags && npm run create-types && npm run publish-npm && npm run remove-types",
+    "release": "standard-version && npm run release-generic",
+    "release-minor": "standard-version --release-as minor && npm run release-generic",
+    "release-major": "standard-version --release-as major && npm run release-generic",
     "paddle-webhook-tunnel": "lt --port 3456 --subdomain slsdkfenf88811xfe"
   },
   "repository": {
@@ -47,7 +51,8 @@
     "node-amy": "^3.7.0",
     "nodemon": "^3.1.7",
     "puppeteer": "^23.9.0",
-    "standard-version": "^9.5.0"
+    "standard-version": "^9.5.0",
+    "typescript": "^5.5.4"
   },
   "dependencies": {
     "@discue/mongodb-resource-client": "^1.0.0",
