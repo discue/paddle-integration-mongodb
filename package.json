@@ -23,8 +23,7 @@
     "release-generic": "npm run push-incl-tags && npm run create-types && npm run publish-npm && npm run remove-types",
     "release": "standard-version && npm run release-generic",
     "release-minor": "standard-version --release-as minor && npm run release-generic",
-    "release-major": "standard-version --release-as major && npm run release-generic",
-    "paddle-webhook-tunnel": "lt --port 3456 --subdomain slsdkfenf88811xfe"
+    "release-major": "standard-version --release-as major && npm run release-generic"
   },
   "repository": {
     "type": "git",
@@ -45,7 +44,6 @@
     "chai": "^5.1.2",
     "eslint": "^9.16.0",
     "express": "^4.21.1",
-    "localtunnel": "^2.0.2",
     "mocha": "^11.0.1",
     "mongodb-memory-server": "^10.1.2",
     "node-amy": "^3.7.0",
