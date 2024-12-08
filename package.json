@@ -18,6 +18,8 @@
     "test": "mocha test/spec/**/*.spec.js --check-leaks  --timeout 50000 --file test/global-mocha-setup.js",
     "test-e2e": "playwright test --config playwright.config.cjs test-e2e/spec",
     "lint": "eslint -c .eslintrc.js lib",
+    "push-incl-tags": "git push --follow-tags origin main",
+    "publish-npm": "npm publish --access public",
     "remove-types": "find lib -name \"*.d.ts\" -type f -delete",
     "create-types": "npx tsc lib/index.js --declaration --emitDeclarationOnly --allowJs && npx tsc lib/types.js --declaration --emitDeclarationOnly --allowJs || true",
     "release-generic": "npm run push-incl-tags && npm run create-types && npm run publish-npm && npm run remove-types",
