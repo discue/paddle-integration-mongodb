@@ -22,7 +22,7 @@ const config = defineConfig({
     projects: [
         {
             name: 'chromium',
-            use: { ...devices['Desktop Chrome'], headless },
+            use: { ...devices['Desktop Chrome'], headless, launchOptions: { slowMo: 50 } },
         }
     ],
 })
