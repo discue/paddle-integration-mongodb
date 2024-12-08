@@ -48,8 +48,9 @@ For the webhooks integration to work and to be able to correlate incoming hooks 
 
 ```js
 import { SubscriptionHooks, subscriptionStorage } from '@discue/paddle-integration-mongodb'
+import client from './my-mongodb-client.js' // <-- to be provided by your application
 
-const storage = subscriptionStorage({ url: 'mongodb://localhost:27017' })
+const storage = subscriptionStorage({ client })
 const subscriptions = new SubscriptionHooks({ storage })
 
 module.exports = async (req, res, next) => {
