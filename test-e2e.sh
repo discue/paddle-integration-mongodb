@@ -11,6 +11,6 @@ function cancel {
 
 trap cancel EXIT
 
-docker run -it --detach --init --rm --network host ekzhang/bore local 3456 --to bore.pub --port 57143
+docker run -it --detach --init --rm --network host ekzhang/bore local --local-host 172.17.0.1 --to bore.pub --port 57143 3456
 sleep 5
 npm run test-e2e
