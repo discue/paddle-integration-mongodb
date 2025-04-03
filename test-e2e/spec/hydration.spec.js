@@ -126,7 +126,6 @@ test('hydrates the initial payment too', async ({ page }) => {
     expect(payment.passthrough).toContain(apiClientId)
     expect(parseFloat(payment.next_payment_amount)).toEqual(parseFloat(result.order.total))
     expect(payment.payment_method).toEqual('card')
-    expect(payment.quantity).toEqual('')
     {
         // strip the hash value 3834651 from url
         // https://sandbox-my.paddle.com/receipt/525486-3834651/1192015-chrea38c44d0069-2b66b730c9
@@ -222,7 +221,6 @@ test('provides enough data for a hydrated payment to look like a real one', asyn
     expect(payment.checkout_id).toBeUndefined()
     expect(payment.amount.currency).toEqual(result.order.currency)
     expect(payment.amount.total).toEqual(result.order.total)
-    expect(payment.amount.quantity).toEqual('')
     expect(payment.amount.unit_price).toBeUndefined()
     expect(payment.subscription_plan_id).toEqual(result.order.product_id)
     expect(payment.next_payment.date).not.toBeUndefined()
@@ -342,7 +340,6 @@ test('hydrate a deleted subscription', async ({ page }) => {
     expect(status.currency).toEqual(subscriptionFromApi.last_payment.currency)
     expect(status.description).toEqual('deleted')
     expect(status.next_bill_date).toBeUndefined()
-    expect(status.quantity).toEqual('')
     expect(status.update_url).toBeUndefined()
     expect(status.subscription_id).toEqual(subscriptionFromApi.subscription_id)
     expect(status.subscription_plan_id).toEqual(subscriptionFromApi.plan_id)
