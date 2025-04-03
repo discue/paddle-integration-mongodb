@@ -280,21 +280,23 @@ test('does not hydrate if status created was already received', async ({ page })
     // create new subscription and ...
     await createNewSubscription(page, apiClientId)
 
-    let subscription = await storage.get([apiClientId])
-    const subscriptionId = subscription.status[0].subscription_id
-
     await catchAndRetry(async () => {
+        const subscription = await storage.get([apiClientId])
+
         // .. and check subscription is active to make sure setup was correct
         let sub = await subscriptionInfo.getAllSubscriptionsStatus(subscription)
         expect(sub['52450']).toBeTruthy()
     })
+
+    const subscription = await storage.get([apiClientId])
+    const subscriptionId = subscription.status[0].subscription_id
 
     // .. now hydrate status again ..
     await subscriptionHydration.hydrateSubscriptionCreated([apiClientId], { subscription_id: subscriptionId }, 'checkoutId')
 
     await catchAndRetry(async () => {
         // .. and expect subscription to be active again
-        subscription = await storage.get([apiClientId])
+        const subscription = await storage.get([apiClientId])
         expect(subscription.status).toHaveLength(1)
     })
 })
