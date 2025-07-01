@@ -50,7 +50,7 @@
     "mongodb-memory-server": "^10.1.4",
     "node-amy": "^3.7.0",
     "nodemon": "^3.1.10",
-    "puppeteer": "^24.9.0",
+    "puppeteer": "^24.11.1",
     "standard-version": "^9.5.0",
     "typescript": "^5.8.3"
   },
