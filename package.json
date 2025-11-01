@@ -47,7 +47,7 @@
     "eslint": "^9.34.0",
     "express": "^5.1.0",
     "mocha": "^11.7.1",
-    "mongodb-memory-server": "^10.2.1",
+    "mongodb-memory-server": "^10.3.0",
     "node-amy": "^3.7.0",
     "nodemon": "^3.1.10",
     "puppeteer": "^24.27.0",
