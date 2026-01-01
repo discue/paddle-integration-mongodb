@@ -45,7 +45,7 @@
     "@playwright/test": "^1.56.1",
     "chai": "^6.2.0",
     "eslint": "^9.39.2",
-    "express": "^5.1.0",
+    "express": "^5.2.1",
     "mocha": "^11.7.5",
     "mongodb-memory-server": "^10.3.0",
     "node-amy": "^3.7.0",
