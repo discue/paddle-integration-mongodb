@@ -44,7 +44,7 @@
     "@discue/open-telemetry-tracing": "^1.4.0",
     "@playwright/test": "^1.58.2",
     "chai": "^6.2.2",
-    "eslint": "^9.39.2",
+    "eslint": "^10.0.2",
     "express": "^5.2.1",
     "mocha": "^11.7.5",
     "mongodb-memory-server": "^11.0.1",
