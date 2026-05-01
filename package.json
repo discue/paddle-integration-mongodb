@@ -47,7 +47,7 @@
     "chai": "^6.2.2",
     "eslint": "^10.1.0",
     "express": "^5.2.1",
-    "globals": "^17.4.0",
+    "globals": "^17.5.0",
     "mocha": "^11.7.5",
     "mongodb-memory-server": "^11.0.1",
     "node-amy": "^3.7.0",
