@@ -54,7 +54,7 @@
     "nodemon": "^3.1.11",
     "puppeteer": "^25.10.0",
     "standard-version": "^9.5.0",
-    "typescript": "^6.0.2"
+    "typescript": "^7.0.2"
   },
   "dependencies": {
     "@discue/mongodb-resource-client": "^1.0.0",
