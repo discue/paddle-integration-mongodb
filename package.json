@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "@discue/mongodb-resource-client": "^1.0.0",
-    "got": "^15.1.0",
+    "got": "^16.0.0",
     "html-entities": "^2.6.0"
   },
   "optionalDependencies": {
