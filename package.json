@@ -2,7 +2,7 @@
   "name": "@discue/paddle-integration-mongodb",
   "author": "Stefan Pfaffel",
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Paddle payments integration mongodb database",
   "main": "lib/index",
   "type": "module",
